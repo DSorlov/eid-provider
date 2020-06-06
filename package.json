@@ -1,0 +1,35 @@
+{
+  "name": "eid-provider",
+  "version": "0.0.1",
+  "description": "Integration module for Swedish electronic identification providers",
+  "bundleDependencies": false,
+  "deprecated": false,
+  "main": "eid-provider.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniel Sörlöv",
+  "license": "ISC",
+  "dependencies": {
+    "await-to-js": "^2.1.1",
+    "axios": "^0.19.2",
+    "jsonwebtoken": "^8.5.1",
+    "uuid": "^8.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DSorlov/eid-provider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DSorlov/eid-provider/issues"
+  },
+  "homepage": "https://github.com/DSorlov/eid-provider#readme",
+  "keywords": [
+    "BankID",
+    "Freja eID",
+    "eLegitimation",
+    "eleg",
+    "funktionstjänster",
+    "grandid"
+  ]
+}
