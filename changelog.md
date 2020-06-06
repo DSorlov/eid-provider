@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing right now
+- Added BankID via Svensk e-Identitet (gbankid)
 
 ## [0.0.1] (2020-06-06)
 - Initial commit

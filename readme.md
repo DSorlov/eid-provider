@@ -14,7 +14,7 @@ This module is developed to enable rapid deployment of identity based authentica
  - [ ] Freja eID via GrandID by Svensk e-Identitet (gfrejaeid)
  - [x] BankID directly with BankID API (bankid)
  - [ ] BankID via Funktionstjänster by CGI (ftbankid)
- - [ ] BankID via GrandID by Svensk e-Identitet (gbankid)
+ - [x] BankID via GrandID by Svensk e-Identitet (gbankid)
 
 **Currently supported methods:**
 - Authentication requests (needs ssn)
