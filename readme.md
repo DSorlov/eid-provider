@@ -91,8 +91,12 @@ config.password = 'mysupersecretpassword';
 eidprovider.initialize(config);
 ```
 ## Modules
+There are basically right now two main types of integrations: one is working directly with the service apis and the other kind is working with a broker service. The broker services can be usefull if you have many integrations or other sources in your enterprise and you wish to use the same sources for these.
+
+The configuration options below should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.
+
 ### BankID 
-This module works directly with the BankID api. It is supplied with working testing credentials and basic production credentials.
+This module works directly with the BankID api. It is supplied with working testing credentials and basic production details.
 >**Default production configuration (settings.production)**
 ```
 endpoint:  'https://appapi2.bankid.com/rp/v5',
@@ -110,7 +114,7 @@ allowFingerprint:  true,
 password:  'qwerty123'
 ```
 ### Freja eID
-This module works directly with the Freja eID REST API. It is supplied with working testing credentials and basic production credentials.
+This module works directly with the Freja eID REST API. It is supplied with working testing credentials and basic production details.
 >**Default production configuration (settings.production)**
 ```
 endpoint:  'https://services.prod.frejaeid.com',
@@ -128,4 +132,35 @@ ca_cert:  fs.readFileSync(`./certs/frejaeid_test.ca`),
 jwt_cert:  fs.readFileSync(`./certs/frejaeid_test.jwt`),
 minimumLevel:  'EXTENDED',
 password:  'test'
+```
+### Funktionstjänster (same for both the ftbankid and ftfrejaeid modules)
+This module works by interfacing the Funktionstjänster service. It is supplied working testing credentials and basic production details.
+>**Default production configuration (settings.production)**
+```
+endpoint:  'https://grp.funktionstjanster.se:18898/grp/v2?wsdl',
+ca_cert:  fs.readFileSync(`./certs/ftbankid_prod.ca`),
+display_name:  '',
+policy:  ''
+
+```
+>**Default testing configuration (settings.testing)**
+```
+endpoint:  'https://grpt.funktionstjanster.se:18898/grp/v2?wsdl',
+ca_cert:  fs.readFileSync(`./certs/ftbankid_test.ca`),
+display_name:  'test',
+policy:  'logtest020'
+```
+### GrandID (same for both the gbankid and gfrejaeid modules)
+This module works by interfacing the GrandID service. It is supplied only with basic information. You need to obtain your own credentials.
+>**Default production configuration (settings.production)**
+```
+endpoint: 'https://client.grandid.com/',
+servicekey: '',
+apikey: ''
+```
+>**Default testing configuration (settings.testing)**
+```
+endpoint: 'https://client.grandid.com/',
+servicekey: '',
+apikey: ''
 ```
