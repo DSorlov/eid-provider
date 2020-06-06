@@ -1,6 +1,6 @@
 {
   "name": "eid-provider",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Integration module for Swedish electronic identification providers",
   "bundleDependencies": false,
   "deprecated": false,
