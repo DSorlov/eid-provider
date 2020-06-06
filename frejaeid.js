@@ -135,9 +135,9 @@ async function pollStatus(self,endpoint,data) {
         switch(result.data.status)
         {
             case "STARTED":
-                return {status: 'pending', code: 'notdelivered', description: 'The transaction has not initialized yet'};
+                return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
             case "DELIVERED_TO_MOBILE":
-                return {status: 'pending', code: 'user_in_app', description: 'User have started the app'};
+                return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
             case "CANCELED":
             case "REJECTED":
                 return {status: 'error', code: 'cancelled_by_user', description: 'The user declined the transaction'};

@@ -70,9 +70,9 @@ async function pollStatus(id) {
             case "expiredTransaction":
                 return {status: 'error', code: 'expired_transaction', description: 'The transaction was not completed in time'};
             case "outstandingTransaction":
-                return {status: 'pending', code: 'notdelivered', description: 'The transaction has not initialized yet'};
+                return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
             case "userSign":
-                return {status: 'pending', code: 'user_in_app', description: 'User have started the app'};
+                return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
             case "noClient":
                 return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
             case "userCancel":
