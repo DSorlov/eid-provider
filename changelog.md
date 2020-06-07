@@ -4,7 +4,13 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing right now
+- Multi-variable input support takes string or object containing ssn in most modules
+- module frejaeid now supports multi country, default is sweden ([SE,NO,FI,DK])
+- Added BankID via Funktionstjänster (ftbankid)
+- Autostart URL added to ftbankid,gbankid,bankid,ftfrejaeid,frejaeid
+- Added Freja eID Organizational IDs
+- Changed how to decide module: require('eid-provider')('yourmodule')
+- Added involuntary dependency on request for bankid due to soap module. Hope this goes away.
 
 ## [0.0.2] (2020-06-06)
 - Added BankID via Svensk e-Identitet (gbankid)

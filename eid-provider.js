@@ -1,31 +1,35 @@
+const fs = require('fs')
 
 //Universal loader of eid modules
-function initModule(provider) {
-    var module = {};
-    var library = require("./"+provider+".js")
+module.exports = function(provider) {
 
-    module.settings = library.settings;
-    module.initialize = library.initialize;
-    module.pollSignStatus = library.pollSignStatus;
-    module.pollAuthStatus = library.pollAuthStatus;
-    module.signRequest = library.signRequest;
-    module.authRequest = library.authRequest;
-    module.initAuthRequest = library.initAuthRequest;
-    module.initSignRequest = library.initSignRequest;
-    module.cancelSignRequest = library.cancelSignRequest;
-    module.cancelAuthRequest = library.cancelAuthRequest;
+    // Check so module exists
+    if (fs.existsSync("./"+provider+".js")) {
 
-    return module;
-};
+        // Prepare....
+        var module = {};
+        var library = require("./"+provider+".js");
 
-// These are the most important, they are for calling the respective native apis.
-module.exports.bankid = initModule('bankid');
-module.exports.frejaeid = initModule('frejaeid');
+        // Dunk those functions in there..
+        module.settings = library.settings;
+        module.initialize = library.initialize;
+        module.pollSignStatus = library.pollSignStatus;
+        module.pollAuthStatus = library.pollAuthStatus;
+        module.signRequest = library.signRequest;
+        module.authRequest = library.authRequest;
+        module.initAuthRequest = library.initAuthRequest;
+        module.initSignRequest = library.initSignRequest;
+        module.cancelSignRequest = library.cancelSignRequest;
+        module.cancelAuthRequest = library.cancelAuthRequest;
 
-// Theese are for Funktionstjänster by CGI
-module.exports.ftbankid = initModule('ftbankid');
-module.exports.ftfrejaeid = initModule('ftfrejaeid');
+        // Give it to our master
+        return module;
 
-// Theese are for GrandID by Svensk e-Legitimation
-module.exports.gbankid = initModule('gbankid');
-module.exports.gfrejaeid = initModule('gfrejaeid');
+    } else {
+
+        // Sigh. That module does not exist. Yet. Contribute?
+        throw new Error('There is no such eid-provider module');
+
+    }
+
+}

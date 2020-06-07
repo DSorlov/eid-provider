@@ -20,6 +20,30 @@ const defaultSettings = {
 var settings = undefined;
 var axios = undefined; 
 
+function initialize(settings) {
+    //TODO: Validate the incomming object for completeness.
+    this.settings = settings;
+    this.axios = axioslibrary.create({
+        httpsAgent: new https.Agent(),     
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    });    
+}
+
+function unPack(data) {
+    if (typeof data === 'string') {
+        return data;
+    } else {
+        if (data.ssn) {
+            return data.ssn;
+        } else {
+            return data.toString();
+        }
+    }
+}
+
 async function pollStatus(id) {
 
     // Check the transaction via API
@@ -30,6 +54,10 @@ async function pollStatus(id) {
     var result = error ? error.response : response;
 
     if (error) {
+        if (!error.response && error.isAxiosError) {
+            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+        }
+
         if (result.data.errorObject.code==='BANKID_MSG') {
             if (result.data.errorObject.message==='Session id does not exist') {
                 return {status: 'error', code: 'request_id_invalid', description: 'The supplied request cannot be found'};
@@ -129,6 +157,7 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 }
 
 async function initAuthRequest(ssn){
+    ssn = unPack(ssn);
     return await initRequest(this,ssn, {
         callbackUrl: "https://localhost/",
         personalNumber: ssn,
@@ -139,6 +168,7 @@ async function initAuthRequest(ssn){
 }
 
 async function initSignRequest(ssn,text){
+    ssn = unPack(ssn);
     return await initRequest(this,ssn, {
         callbackUrl: "https://localhost/",
         personalNumber: ssn,
@@ -156,8 +186,15 @@ async function initRequest(self,data) {
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
-        return {status: 'initialized', id: result.data.sessionId, extra: { autostart_token: result.data.autoStartToken}};
+        return {status: 'initialized', id: result.data.sessionId, extra: {
+            autostart_token: result.data.autoStartToken,
+            autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
+        }};
     } else {
+        if (!error.response && error.isAxiosError) {
+            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+        }
+
         if (result.data.errorCode) {
             switch(result.data.errorCode)  {
                 case "alreadyInProgress":
@@ -178,18 +215,6 @@ async function initRequest(self,data) {
         }
     }
 
-}
-
-function initialize(settings) {
-    //TODO: Validate the incomming object for completeness.
-    this.settings = settings;
-    this.axios = axioslibrary.create({
-        httpsAgent: new https.Agent(),     
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-    });    
 }
 
 async function cancelRequest(id) {
