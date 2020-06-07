@@ -10,16 +10,14 @@ const defaultSettings = {
         client_cert: '',
         ca_cert: fs.readFileSync(`./certs/bankid_prod.ca`),
         jwt_cert: fs.readFileSync(`./certs/frejaeid_prod.jwt`),
-        password: '',
-        default_country: 'SE'
+        password: ''
     },
     testing: {
         endpoint: 'https://services.test.frejaeid.com',
         client_cert: fs.readFileSync('./certs/frejaeid_test.pfx'),
         ca_cert: fs.readFileSync(`./certs/frejaeid_test.ca`),
         jwt_cert: fs.readFileSync(`./certs/frejaeid_test.jwt`),
-        password: 'test',
-        default_country: 'SE'
+        password: 'test'
     }        
 }
 
