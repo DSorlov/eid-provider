@@ -9,7 +9,7 @@ This module is developed to enable rapid deployment of identity based authentica
 
 ### Simple to use
 
-There is only one way of interfacing the modules regardles of which module. You can read details of the [methods](docs/methods.md) or see some [more examples](docs/examples.md)
+There is only one way of sending data into and out of the modules. Uniformity regardless of service. You can read details of the [methods](docs/methods.md) or see some [more examples](docs/examples.md)
 
 ```javascript
 const  eidprovider = require('./eid-provider.js')('frejaeid');  
