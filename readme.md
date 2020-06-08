@@ -1,4 +1,4 @@
-[![stability-stable](https://img.shields.io/badge/stability-prerelease-lightgrey.svg)](#)
+[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](#)
 [![version](https://img.shields.io/badge/version-0.1.0-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2020.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
