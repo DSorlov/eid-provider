@@ -39,11 +39,23 @@ function initialize(settings) {
     });
 }
 
+function unPack(data) {
+    if (typeof data === 'string') {
+        return data;
+    } else {
+        if (data.ssn) {
+            return data.ssn;
+        } else {
+            return data.toString();
+        }
+    }
+}
+
 // Check the status of an existing request
-async function pollStatus(id) {
+async function pollStatus(id,self=this) {
 
     // Check the transaction via API
-    const [error, response] = await to(this.axios.post(`${this.settings.endpoint}/collect`, {
+    const [error, response] = await to(self.axios.post(`${self.settings.endpoint}/collect`, {
         orderRef: id
     }));
 
@@ -52,6 +64,10 @@ async function pollStatus(id) {
     var result = error ? error.response : response;
 
     if (error) {
+        if (!error.response && error.isAxiosError) {
+            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+        }
+        
         if (result.data.errorCode) {
             switch(result.data.errorCode)  {
                 case "invalidParameters":
@@ -134,7 +150,7 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
     while (true) {
 
         // Retreive current status
-        const [error, pollresp] = await to(self.pollStatus(initresp.id));
+        const [error, pollresp] = await to(pollStatus(initresp.id,self));
 
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
@@ -149,6 +165,7 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 
 // Lets structure a call for a auth request and return the worker
 async function initAuthRequest(ssn) {
+    ssn = unPack(ssn);
     return await initRequest(this,'auth', {
         endUserIp: '127.0.0.1',
         personalNumber: ssn,
@@ -159,6 +176,7 @@ async function initAuthRequest(ssn) {
 
 // Lets structure a call for a sign request and return the worker
 async function initSignRequest(ssn,text) {
+    ssn = unPack(ssn);
     return await initRequest(this,'sign', {
         endUserIp: '127.0.0.1',
         personalNumber: ssn,
@@ -180,8 +198,15 @@ async function initRequest(self,endpoint,data) {
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
-        return {status: 'initialized', id: result.data.orderRef, extra: { autostart_token: result.data.autoStartToken}};
+        return {status: 'initialized', id: result.data.orderRef, extra: {
+            autostart_token: result.data.autoStartToken,
+            autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
+        }};
     } else {
+        if (!error.response && error.isAxiosError) {
+            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+        }
+
         if (result.data.errorCode) {
             switch(result.data.errorCode)  {
                 case "alreadyInProgress":

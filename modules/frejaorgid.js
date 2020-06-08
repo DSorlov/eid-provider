@@ -10,7 +10,6 @@ const defaultSettings = {
         client_cert: '',
         ca_cert: fs.readFileSync(`./certs/bankid_prod.ca`),
         jwt_cert: fs.readFileSync(`./certs/frejaeid_prod.jwt`),
-        minimumLevel: 'EXTENDED',
         password: ''
     },
     testing: {
@@ -18,7 +17,6 @@ const defaultSettings = {
         client_cert: fs.readFileSync('./certs/frejaeid_test.pfx'),
         ca_cert: fs.readFileSync(`./certs/frejaeid_test.ca`),
         jwt_cert: fs.readFileSync(`./certs/frejaeid_test.jwt`),
-        minimumLevel: 'EXTENDED',
         password: 'test'
     }        
 }
@@ -43,33 +41,27 @@ function initialize(settings) {
 }
 
 // Lets structure a call for a auth request and return the worker
-async function initAuthRequest(ssn) {
-    return await initRequest(this,'authentication/1.0/initAuthentication', "initAuthRequest="+Buffer.from(JSON.stringify({
-        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO"],
+async function initAuthRequest(orgid) {
+    return await initRequest(this,'organisation/authentication/1.0/init', "initAuthRequest="+Buffer.from(JSON.stringify({
+        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO", "SSN"],
         minRegistrationLevel: this.settings.minimumLevel,
-        userInfoType: "SSN",
-        userInfo: Buffer.from(JSON.stringify({
-            country: 'SE',
-            ssn: ssn
+        userInfoType: "ORG_ID",
+        userInfo: orgid
         })).toString('base64')
-    })).toString('base64')
     );
 }
 
 // Lets structure a call for a sign request and return the worker
-async function initSignRequest(ssn,text) {
-    return await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
-        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO"],
+async function initSignRequest(orgid,text) {
+    return await initRequest(this,'organisation/sign/1.0/init', "initSignRequest="+Buffer.from(JSON.stringify({
+        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO", "SSN"],
         minRegistrationLevel: this.settings.minimumLevel,
-        userInfoType: "SSN",
+        userInfoType: "ORG_ID",
         signatureType: 'SIMPLE',
         dataToSignType: 'SIMPLE_UTF8_TEXT',
         dataToSign: { text: Buffer.from(text).toString('base64') },
-        userInfo: Buffer.from(JSON.stringify({
-            country: 'SE',
-            ssn: ssn
+        userInfo: orgid
         })).toString('base64')
-    })).toString('base64')
     );
 }
 
@@ -80,8 +72,16 @@ async function initRequest(self,endpoint,data) {
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
-        return {status: 'initialized', id: result.data.authRef ? result.data.authRef : result.data.signRef };
+        var refId = result.data.authRef ? result.data.authRef : result.data.signRef
+        return {status: 'initialized', id: refId, extra: {
+            autostart_token: refId,
+            autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(refId)
+        } };
     } else {
+        if (!result.response && result.isAxiosError) {
+            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+        }
+
         if (result.data.code) {
             switch(result.data.code)  {
                 case 1012:
@@ -104,15 +104,15 @@ async function initRequest(self,endpoint,data) {
 }
 
 // Check the status of an existing auth request
-async function pollAuthStatus(id) {
-    return pollStatus(this,'authentication/1.0/getOneResult',"getOneAuthResultRequest="+Buffer.from(JSON.stringify({
+async function pollAuthStatus(id,self=this) {
+    return pollStatus(self,'organisation/authentication/1.0/getOneResult',"getOneAuthResultRequest="+Buffer.from(JSON.stringify({
         authRef: id
     })).toString('base64'))
 }
 
 // Check the status of an existing sign request
-async function pollSignStatus(id) {
-    return pollStatus(this,'sign/1.0/getOneResult',"getOneSignResultRequest="+Buffer.from(JSON.stringify({
+async function pollSignStatus(id,self=this) {
+    return pollStatus(self,'organisation/sign/1.0/getOneResult',"getOneSignResultRequest="+Buffer.from(JSON.stringify({
         signRef: id
     })).toString('base64'))
 }
@@ -122,6 +122,10 @@ async function pollStatus(self,endpoint,data) {
     const [error, response] = await to(self.axios.post(`${self.settings.endpoint}/${endpoint}`,data));
 
     var result = error ? error.response : response;
+
+    if (!result.response && result.isAxiosError) {
+        return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+    }
 
     if (result.data.code)
     {
@@ -159,12 +163,14 @@ async function pollStatus(self,endpoint,data) {
                 return {
                     status: 'completed', 
                     user: {
-                        ssn: userInfo.ssn,
+                        ssn: userInfo.requestedAttributes.ssn.ssn,
                         firstname: result.data.requestedAttributes.basicUserInfo.name,
                         surname: result.data.requestedAttributes.basicUserInfo.surname,
                         fullname: result.data.requestedAttributes.basicUserInfo.name + ' ' + result.data.requestedAttributes.basicUserInfo.surname
                     },
                     extra: {
+                        country: userInfo.requestedAttributes.ssn.country,
+                        org_id: userInfo.requestedAttributes.organisationIdIdentifier,
                         jwt_token: result.data.details
                     }};                
             default:
@@ -204,7 +210,7 @@ async function followRequest(self, pollMethod, initresp, initcallback=undefined,
 
         // Retreive current status
 
-        const [error, pollresp] = pollMethod=='auth' ? await to(self.pollAuthStatus(initresp.id)) : await to(self.pollSignStatus(initresp.id)) 
+        const [error, pollresp] = pollMethod=='auth' ? await to(self.pollAuthStatus(initresp.id,self)) : await to(self.pollSignStatus(initresp.id,self)) 
 
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
@@ -219,7 +225,7 @@ async function followRequest(self, pollMethod, initresp, initcallback=undefined,
 
 // Lets cancel pending requests, dont really care about the results here
 async function cancelAuthRequest(id) {
-      await to(this.axios.post(`${this.settings.endpoint}/authentication/1.0/cancel`, 
+      await to(this.axios.post(`${this.settings.endpoint}/organisation/authentication/1.0/cancel`, 
         "cancelAuthRequest="+Buffer.from(JSON.stringify({
             authRef: id
         })).toString('base64')
@@ -229,7 +235,7 @@ async function cancelAuthRequest(id) {
 
 // Lets cancel pending requests, dont really care about the results here
 async function cancelSignRequest(id) {
-    await to(this.axios.post(`${this.settings.endpoint}/sign/1.0/cancel`, 
+    await to(this.axios.post(`${this.settings.endpoint}/organisation/sign/1.0/cancel`, 
       "cancelSignRequest="+Buffer.from(JSON.stringify({
           signRef: id
       })).toString('base64')
