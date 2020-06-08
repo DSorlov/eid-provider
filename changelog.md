@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing for now
 
+## [0.1.1] (2020-06-08)
+- Fixed broken paths in the module
+- Fixed broken implementation in gbankid
+
 ## [0.1.0] (2020-06-08)
 - Multi-variable input support takes string or object containing ssn in most modules
 - module frejaeid now supports multi country, default is sweden ([SE,NO,FI,DK])

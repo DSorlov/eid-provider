@@ -158,7 +158,7 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 
 async function initAuthRequest(ssn){
     ssn = unPack(ssn);
-    return await initRequest(this,ssn, {
+    return await initRequest(this, {
         callbackUrl: "https://localhost/",
         personalNumber: ssn,
         pushNotification: "TGVnaXRpbWVyaW5nCg==",
@@ -169,7 +169,7 @@ async function initAuthRequest(ssn){
 
 async function initSignRequest(ssn,text){
     ssn = unPack(ssn);
-    return await initRequest(this,ssn, {
+    return await initRequest(this, {
         callbackUrl: "https://localhost/",
         personalNumber: ssn,
         pushNotification: "U2lnbmVyaW5n",

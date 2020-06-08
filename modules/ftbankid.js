@@ -8,13 +8,13 @@ const soap = require("soap");
 const defaultSettings = {
     production: {
         endpoint: 'https://grp.funktionstjanster.se:18898/grp/v2?wsdl',
-        ca_cert: fs.readFileSync(`./certs/ftbankid_prod.ca`),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/ftbankid_prod.ca`),
         display_name: '',
         policy: ''
     },
     testing: {
         endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2?wsdl',
-        ca_cert: fs.readFileSync(`./certs/ftbankid_test.ca`),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/ftbankid_test.ca`),
         display_name: 'test',
         policy: 'logtest020'
     }        

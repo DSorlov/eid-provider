@@ -4,11 +4,11 @@ const fs = require('fs')
 module.exports = function(provider) {
 
     // Check so module exists
-    if (fs.existsSync("./modules/"+provider+".js")) {
+    if (fs.existsSync(__dirname +"/modules/"+provider+".js")) {
 
         // Prepare....
         var module = {};
-        var library = require("./modules/"+provider+".js");
+        var library = require(__dirname +"/modules/"+provider+".js");
 
         // Dunk those functions in there..
         module.settings = library.settings;

@@ -7,14 +7,14 @@ const defaultSettings = {
     production: {
         endpoint: 'https://appapi2.bankid.com/rp/v5',
         client_cert: '',
-        ca_cert: fs.readFileSync(`./certs/bankid_prod.ca`),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_prod.ca`),
         allowFingerprint: true,
         password: ''
     },
     testing: {
         endpoint: 'https://appapi2.test.bankid.com/rp/v5',
-        client_cert: fs.readFileSync('./certs/bankid_test.pfx'),
-        ca_cert: fs.readFileSync(`./certs/bankid_test.ca`),
+        client_cert: fs.readFileSync(__dirname +'/../certs/bankid_test.pfx'),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_test.ca`),
         allowFingerprint: true,
         password: 'qwerty123'
     }        
