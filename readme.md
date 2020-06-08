@@ -31,9 +31,9 @@ There are basically right now two main types of integrations: one is working dir
 | [frejaeid](docs/frejaeid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production ready |
 | [frejaorgid](docs/frejaorgid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production ready |
 | [ftbankid](docs/ftbankid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production ready |
-| [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Not recomended* |
-| [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Not recomended** |
-| [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :x: | :x: | :sweden: | Not recomended*** |
+| [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Not tested* |
+| [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Not tested** |
+| [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :heavy_check_mark:| :x: | :sweden: | Working, but not supported*** |
 
 <sup>* The API key we have been supplied with does not allow for freja authentication so largely untested but complies with api.<br/>
 ** The GrandID keys we have got for testing have stopped working so have not been tested.<br/>

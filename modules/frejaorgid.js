@@ -74,6 +74,7 @@ async function initRequest(self,endpoint,data) {
     if(!error) {
         var refId = result.data.authRef ? result.data.authRef : result.data.signRef
         return {status: 'initialized', id: refId, extra: {
+            autostart_token: refId,
             autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(refId)
         } };
     } else {

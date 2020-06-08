@@ -172,7 +172,7 @@ async function initSignRequest(ssn,text){
     return await initRequest(this,ssn, {
         callbackUrl: "https://localhost/",
         personalNumber: ssn,
-        pushNotification: "TGVnaXRpbWVyaW5nCg==",
+        pushNotification: "U2lnbmVyaW5n",
         gui: false,
         thisDevice: false,
         userVisibleData: Buffer.from(text).toString('base64')

@@ -6,6 +6,8 @@ It is supplied only with basic information. You need to obtain your own credenti
 
 This module is currently not recomended for production as it is not officially supported by GrandID as they do not currently have a silent integration method for Freja eID. Hopefully this can be updated in the future. Does not support other countries than Sweden due to the scraping magic.
 
+This module does not currently implement signing!
+
 ### Inputs and outputs
 
 **Alternative inputs**

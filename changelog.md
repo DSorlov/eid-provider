@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
+- Nothing for now
+
+## [0.1.0] (2020-06-08)
 - Multi-variable input support takes string or object containing ssn in most modules
 - module frejaeid now supports multi country, default is sweden ([SE,NO,FI,DK])
 - Added BankID via Funktionstjänster (ftbankid)
@@ -13,6 +16,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Added involuntary dependency on request for bankid due to soap module. Hope this goes away.
 - Restructured documentation and added a bit of usefull stuff to it
 - Moved the location of modules into the modules sub-folder
+- Completed gfrejaeid
 
 ## [0.0.2] (2020-06-06)
 - Added BankID via Svensk e-Identitet (gbankid)
@@ -23,6 +27,6 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
-[0.0.3]: https://github.com/DSorlov/eid-provider/releases/tag/v0.0.3
+[0.1.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.0
 [0.0.2]: https://github.com/DSorlov/eid-provider/releases/tag/v0.0.2
 [0.0.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.0.1
