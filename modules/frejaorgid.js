@@ -8,15 +8,15 @@ const defaultSettings = {
     production: {
         endpoint: 'https://services.prod.frejaeid.com',
         client_cert: '',
-        ca_cert: fs.readFileSync(`./certs/bankid_prod.ca`),
-        jwt_cert: fs.readFileSync(`./certs/frejaeid_prod.jwt`),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_prod.ca`),
+        jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_prod.jwt`),
         password: ''
     },
     testing: {
         endpoint: 'https://services.test.frejaeid.com',
-        client_cert: fs.readFileSync('./certs/frejaeid_test.pfx'),
-        ca_cert: fs.readFileSync(`./certs/frejaeid_test.ca`),
-        jwt_cert: fs.readFileSync(`./certs/frejaeid_test.jwt`),
+        client_cert: fs.readFileSync(__dirname +'/../certs/frejaeid_test.pfx'),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_test.ca`),
+        jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_test.jwt`),
         password: 'test'
     }        
 }
