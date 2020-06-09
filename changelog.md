@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing for now
 
+## [0.1.2] (2020-06-09)
+- Fixed broken authentication (gbankid, gfrejaeid) for Svensk e-Idenitet
+
 ## [0.1.1] (2020-06-08)
 - Fixed broken paths in the module
 - Fixed broken implementation in gbankid

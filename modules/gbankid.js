@@ -70,49 +70,56 @@ async function pollStatus(id) {
     }
 
     // Check if a error exists (there is a hintCode in all error messages)
-    if (result.data.errorObject.code==='BANKID_MSG') {
-        if (result.data.errorObject.message.hintCode) {
-            switch(result.data.errorObject.message.hintCode) {
-                case "expiredTransaction":
-                    return {status: 'error', code: 'expired_transaction', description: 'The transaction was not completed in time'};
-                case "outstandingTransaction":
-                    return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
-                case "userSign":
-                    return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
-                case "noClient":
-                    return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
-                case "userCancel":
-                    return {status: 'error', code: 'cancelled_by_user', description: 'The user declined transaction'};
-                case "cancelled":
-                    return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
-                case "startFailed":
-                    return {status: 'error', code: 'initialization_error', description: 'The IdP was unable to start sesson'};
-                default:
-                    return {status: "error", code: 'api_error', description: 'A communications error occured', details: result.data.errorObject.message};
+    if (result.data.errorObject) {
+        if (result.data.errorObject.code==='NOTLOGGEDIN') {
+           return {status: 'error', code: 'api_error', description: 'Probably using the wrong key', details: result.data};
+        } else if (result.data.errorObject.code==='BANKID_MSG') {
+            if (result.data.errorObject.message.hintCode) {
+                switch(result.data.errorObject.message.hintCode) {
+                    case "expiredTransaction":
+                        return {status: 'error', code: 'expired_transaction', description: 'The transaction was not completed in time'};
+                    case "outstandingTransaction":
+                        return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
+                    case "NOTLOGGEDIN":
+                        return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
+                    case "userSign":
+                        return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
+                    case "noClient":
+                        return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
+                    case "userCancel":
+                        return {status: 'error', code: 'cancelled_by_user', description: 'The user declined transaction'};
+                    case "cancelled":
+                        return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
+                    case "startFailed":
+                        return {status: 'error', code: 'initialization_error', description: 'The IdP was unable to start sesson'};
+                    default:
+                        return {status: "error", code: 'api_error', description: 'A communications error occured', details: result.data.errorObject.message};
+                }
             }
+        }else{
+            return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data};
+        }
+    
+    } else {
+        // We should actually only get here if we complete but lets handle the unlikely
+        if (result.data.userAttributes) {
+            return {
+                status: 'completed', 
+                user: {
+                    ssn: result.data.userAttributes.personalNumber,
+                    firstname: result.data.userAttributes.givenName,
+                    surname: result.data.userAttributes.surname,
+                    fullname: result.data.userAttributes.name
+                },
+                extra: {
+                    signature: result.data.userAttributes.signature,
+                    ocspResponse: result.data.userAttributes.ocspResponse}
+                };
         } else {
-            // We should actually only get here if we complete but lets handle the unlikely
-            if (result.data.message.status==="complete") {
-                return {
-                    status: 'completed', 
-                    user: {
-                        ssn: result.data.completionData.user.personalNumber,
-                        firstname: result.data.completionData.user.givenName,
-                        surname: result.data.completionData.user.surname,
-                        fullname: result.data.completionData.user.name
-                    },
-                    extra: {
-                        signature: result.data.completionData.signature,
-                        ocspResponse: result.data.completionData.ocspResponse}
-                    };
-            } else {
-                //This will never happen. Or it should not. Probably gonna happen.
-                return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data.message};
-            }
-        }    
-    }else{
-        return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data};
-    }
+            //This will never happen. Or it should not. Probably gonna happen.
+            return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data.message};
+        }
+    }    
  }
 
  async function authRequest(ssn, initcallback=undefined, statuscallback=undefined) {
@@ -158,27 +165,32 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 
 async function initAuthRequest(ssn){
     ssn = unPack(ssn);
-    return await initRequest(this, {
-        callbackUrl: "https://localhost/",
-        personalNumber: ssn,
-        pushNotification: "TGVnaXRpbWVyaW5nCg==",
-        gui: false,
-        thisDevice: false
-    });
+
+    const params = new URLSearchParams();
+    params.append('callbackUrl', "https://localhost/");
+    params.append('personalNumber', ssn);
+    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('gui', false);
+    params.append('thisDevice', false);
+    params.append('mobileBankId', true);
+
+    return await initRequest(this, params);
 }
 
 async function initSignRequest(ssn,text){
     ssn = unPack(ssn);
-    return await initRequest(this, {
-        callbackUrl: "https://localhost/",
-        personalNumber: ssn,
-        pushNotification: "U2lnbmVyaW5n",
-        gui: false,
-        thisDevice: false,
-        userVisibleData: Buffer.from(text).toString('base64')
-    });
-}
 
+    const params = new URLSearchParams();
+    params.append('callbackUrl', "https://localhost/");
+    params.append('personalNumber', ssn);
+    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('gui', false);
+    params.append('thisDevice', false);
+    params.append('mobileBankId', true);
+    params.append('userVisibleData', Buffer.from(text).toString('base64'));
+
+    return await initRequest(this, params);
+}
 
 async function initRequest(self,data) {
     const [error, response] = await to(self.axios.post(`${self.settings.endpoint}json1.1/FederatedLogin?apiKey=${self.settings.apikey}&authenticateServiceKey=${self.settings.servicekey}`, data));
@@ -186,10 +198,18 @@ async function initRequest(self,data) {
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
-        return {status: 'initialized', id: result.data.sessionId, extra: {
-            autostart_token: result.data.autoStartToken,
-            autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
-        }};
+        if (result.data.errorObject) {
+            if (result.data.errorObject.code==='BANKID_SIGN_NOT_ALLOWED') {
+                return {status: 'error', code: "api_error", description: 'Key is not allowed for document signing'};
+            } else {
+                return {status: 'error', code: "api_error", description: 'A communications error occured', details: result.errorObject};
+            }
+        } else {
+            return {status: 'initialized', id: result.data.sessionId, extra: {
+                autostart_token: result.data.autoStartToken,
+                autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
+            }};
+        }
     } else {
         if (!error.response && error.isAxiosError) {
             return {status: 'error', code: 'system_error', description: error.code, details: error.message}
