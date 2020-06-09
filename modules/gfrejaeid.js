@@ -27,7 +27,7 @@ function initialize(settings) {
     this.axios = axioslibrary.create({
         httpsAgent: new https.Agent(),     
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
     });    
     this.client = axioslibrary.create({
@@ -56,6 +56,12 @@ async function authRequest(ssn, initcallback=undefined, statuscallback=undefined
     return await followRequest(this,initresp,initcallback,statuscallback);
 }
 
+async function signRequest(ssn, text, initcallback=undefined, statuscallback=undefined) {
+    var initresp = await this.initSignRequest(ssn,text);
+    return await followRequest(this,initresp,initcallback,statuscallback);
+}
+
+
 // Start a authRequest and wait for completion
 // Callback will be called as long as we are pending definite answer
 async function followRequest(self, initresp, initcallback=undefined, statuscallback=undefined) {
@@ -74,7 +80,7 @@ async function followRequest(self, initresp, initcallback=undefined, statuscallb
     while (true) {
 
         // Retreive current status
-        const [error, pollresp] = await to(self.pollAuthStatus(initresp.id,self)); 
+        const [error, pollresp] = await to(pollStatus(initresp.id,self)); 
 
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
@@ -87,7 +93,7 @@ async function followRequest(self, initresp, initcallback=undefined, statuscallb
     }
 }
 
-async function pollAuthStatus(id,self=this) {
+async function pollStatus(id,self=this) {
 
     var redirectUrl = Buffer.from(id, 'base64').toString('ascii');
     const [error, response] = await to(self.client.get(redirectUrl+"&poll=1"));
@@ -101,7 +107,7 @@ async function pollAuthStatus(id,self=this) {
             return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
         case "DELIVERED_TO_MOBILE":
             return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
-        case "CANCELLED":
+        case "CANCELED":
         case "REJECTED":
             return {status: 'error', code: 'cancelled_by_user', description: 'The user declined the transaction'};
         case "EXPIRED":
@@ -110,7 +116,9 @@ async function pollAuthStatus(id,self=this) {
             return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
         case "APPROVED":
 
-            const [checkError, checkResponse] = await to(self.client.get(redirectUrl+"&done=1"));
+            var id = redirectUrl.replace("https://login.grandid.com/?sessionid=","");
+            var [checkError, checkResponse] = await to(self.client.get(redirectUrl+"&done=1"));
+            [checkError, checkResponse] = await to(self.axios.get(`${self.settings.endpoint}json1.1/GetSession?apiKey=${self.settings.apikey}&authenticateServiceKey=${self.settings.servicekey}&sessionId=${id}`));
 
             if (checkError) {
                 return {status: 'error', code: "api_error", description: 'A communications error occured', details: checkError.data};        
@@ -119,14 +127,13 @@ async function pollAuthStatus(id,self=this) {
             return {
                 status: 'completed', 
                 user: {
-                    ssn: checkResponse.data.userInfo.ssn,
-                    firstname: checkResponse.data.requestedAttributes.basicUserInfo.name,
-                    surname: checkResponse.data.requestedAttributes.basicUserInfo.surname,
-                    fullname: checkResponse.data.requestedAttributes.basicUserInfo.name + ' ' + checkResponse.data.requestedAttributes.basicUserInfo.surname
+                    ssn: checkResponse.data.userAttributes.requestedAttributes.ssn.ssn,
+                    firstname: checkResponse.data.userAttributes.requestedAttributes.basicUserInfo.name,
+                    surname: checkResponse.data.userAttributes.requestedAttributes.basicUserInfo.surname,
+                    fullname: checkResponse.data.userAttributes.requestedAttributes.basicUserInfo.name + ' ' + checkResponse.data.userAttributes.requestedAttributes.basicUserInfo.surname
                 },
-                extra: {
-                    jwt_token: checkResponse.data.details
-                }};                
+                extra: {}
+            };                
 
         
         default:
@@ -136,20 +143,41 @@ async function pollAuthStatus(id,self=this) {
 
 async function initAuthRequest(ssn) {
     ssn = unPack(ssn);
-    const [error, response] = await to(this.axios.post(`${this.settings.endpoint}json1.1/FederatedLogin?apiKey=${this.settings.apikey}&authenticateServiceKey=${this.settings.servicekey}`, {
-        callbackUrl: "https://localhost/",
-        personalNumber: ssn,
-        pushNotification: "TGVnaXRpbWVyaW5nCg==",
-        gui: false,
-        thisDevice: false
-    }));
+
+    const params = new URLSearchParams();
+    params.append('callbackUrl', "https://localhost/");
+    params.append('personalNumber', ssn);
+    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('gui', false);
+    params.append('thisDevice', false);
+
+    return await initRequest(params,this);
+}
+
+async function initSignRequest(ssn) {
+    ssn = unPack(ssn);
+
+    const params = new URLSearchParams();
+    params.append('callbackUrl', "https://localhost/");
+    params.append('personalNumber', ssn);
+    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('gui', false);
+    params.append('thisDevice', false);
+    params.append('userVisibleData', Buffer.from('testing').toString('base64'));
+
+    return await initRequest(params,this);
+}
+
+async function initRequest(data,self=this) {
+
+    const [error, response] = await to(self.axios.post(`${self.settings.endpoint}json1.1/FederatedLogin?apiKey=${self.settings.apikey}&authenticateServiceKey=${self.settings.servicekey}`, data));
     var result = error ? error.response : response;    
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
         var redirectUrl =  result.data.redirectUrl;
-        const [error, response] = await to(this.client.post(redirectUrl+"&init=1",
-            'frejaSubmit=Logga%20in&userIdentifier='+ssn
+        const [error, response] = await to(self.client.post(redirectUrl+"&init=1",
+            'frejaSubmit=Logga%20in&userIdentifier='+data['personalNumber']
         ));
     
         if (error) {
@@ -179,12 +207,12 @@ function cancelRequest() {
 module.exports = {
     settings: defaultSettings,
     initialize: initialize,
-    pollAuthStatus: pollAuthStatus,
-    pollSignStatus: notImplemented,
-    signRequest: notImplemented,
+    pollAuthStatus: pollStatus,
+    pollSignStatus: pollStatus,
+    signRequest: signRequest,
     authRequest: authRequest,
     initAuthRequest: initAuthRequest,
-    initSignRequest: notImplemented,
-    cancelSignRequest: notImplemented,
+    initSignRequest: initSignRequest,
+    cancelSignRequest: cancelRequest,
     cancelAuthRequest: cancelRequest
 }
