@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.2]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.2
+[0.1.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.1
 [0.1.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.0
 [0.0.2]: https://github.com/DSorlov/eid-provider/releases/tag/v0.0.2
 [0.0.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.0.1
