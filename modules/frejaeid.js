@@ -12,7 +12,9 @@ const defaultSettings = {
         jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_prod.jwt`),
         minimumLevel: 'EXTENDED',
         password: '',
-        default_country: 'SE'
+        default_country: 'SE',
+        id_type: 'SSN',
+        attribute_list: 'EMAIL_ADDRESS,RELYING_PARTY_USER_ID,BASIC_USER_INFO,SSN,ADDRESSES,DATE_OF_BIRTH,ALL_EMAIL_ADDRESSES'
     },
     testing: {
         endpoint: 'https://services.test.frejaeid.com',
@@ -21,7 +23,9 @@ const defaultSettings = {
         jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_test.jwt`),
         minimumLevel: 'EXTENDED',
         password: 'test',
-        default_country: 'SE'
+        default_country: 'SE',
+        id_type: 'SSN',
+        attribute_list: 'EMAIL_ADDRESS,RELYING_PARTY_USER_ID,BASIC_USER_INFO,SSN,ADDRESSES,DATE_OF_BIRTH,ALL_EMAIL_ADDRESSES'
     }        
 }
 
@@ -44,44 +48,50 @@ function initialize(settings) {
     });
 }
 
-function unPack(self,data) {
+function unPack(default_type,default_country,data) {
+
     if (typeof data === 'string') {
-        return { ssn: data, country: self.settings.default_country };
+        return { 
+            userInfoType: default_type,
+            userInfo: default_type==='SSN' ? Buffer.from(JSON.stringify({country: default_country,ssn: data})).toString('base64') : data
+        }            
     } else {
-        return { ssn: data.ssn ? data.ssn : data.toString(), country: data.country ? data.country : self.settings.default_country};
+        var value = data.toString();
+        var country = default_country;
+        if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE') default_type = data.type;
+        if (data.country === 'SE' || data.country === 'FI' || data.country === 'DK' || data.country === 'NO') country = data.country;
+        if (data[default_type.toLowerCase()]) value = data[default_type.toLowerCase()];
+
+        return { 
+                userInfoType: default_type,
+                userInfo: default_type==='SSN' ? Buffer.from(JSON.stringify({country: default_country,ssn: data})).toString('base64') : data
+        } 
     }
 }
 
-
 // Lets structure a call for a auth request and return the worker
 async function initAuthRequest(ssn) {
-    var ssn = unPack(this,ssn);
+    var infoType = unPack(this.settings.id_type,this.settings.default_country,ssn);
     return await initRequest(this,'authentication/1.0/initAuthentication', "initAuthRequest="+Buffer.from(JSON.stringify({
-        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO"],
+        attributesToReturn: this.settings.attribute_list.split(","),
         minRegistrationLevel: this.settings.minimumLevel,
-        userInfoType: "SSN",
-        userInfo: Buffer.from(JSON.stringify({
-            country: ssn.country,
-            ssn: ssn.ssn
-        })).toString('base64')
+        userInfoType: infoType.userInfoType,
+        userInfo: infoType.userInfo
     })).toString('base64')
     );
 }
 
 // Lets structure a call for a sign request and return the worker
 async function initSignRequest(ssn,text) {
-    var ssn = unPack(this,ssn);
-    return await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
-        attributesToReturn: ["EMAIL_ADDRESS", "RELYING_PARTY_USER_ID", "BASIC_USER_INFO"],
+    var infoType = unPack(this.settings.id_type,this.settings.default_country,ssn);
+    var [error, result]  = await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
+        attributesToReturn: this.settings.attribute_list.split(","),
         minRegistrationLevel: this.settings.minimumLevel,
-        userInfoType: "SSN",
+        userInfoType: infoType.userInfoType,
+        userInfo: infoType.userInfo,
         signatureType: 'SIMPLE',
         dataToSignType: 'SIMPLE_UTF8_TEXT',
-        dataToSign: { text: Buffer.from(text).toString('base64') },
-        userInfo: Buffer.from(JSON.stringify({
-            country: ssn.country,
-            ssn: ssn.ssn
-        })).toString('base64')
+        dataToSign: { text: Buffer.from(text).toString('base64') }
     })).toString('base64')
     );
 }
@@ -112,7 +122,9 @@ async function initRequest(self,endpoint,data) {
                 case 2000:
                     return {status: 'error', code: 'already_in_progress', description: 'A transaction was already pending for this SSN'};
                 case 1002:
-                        return {status: 'error', code: 'request_ssn_invalid', description: 'The supplied SSN is not valid'};
+                    return {status: 'error', code: 'request_ssn_invalid', description: 'The supplied SSN is not valid'};
+                case 2003:
+                    return {status: 'error', code: 'api_error', description: 'The selected user does not have a CUSTOM_IDENTIFIER, retry without.'};
                 default:
                     return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data.message};
                 }
@@ -176,22 +188,41 @@ async function pollStatus(self,endpoint,data) {
                     //Trying to be efficient and reuse our userInfo object we sent in
                     //Make sure the data we got is signed and fail if verification fails
                     var decoded = jwt.verify(result.data.details, self.settings.jwt_cert);
-                    var userInfo = JSON.parse(decoded.userInfo);
+                    var userInfo = JSON.parse(decoded.userInfo)
                 } catch(err) {
                     return {status: 'error', code: 'api_error', description: 'The signature integrity validation failed'};
                 }
 
-                return {
+                var result = {
                     status: 'completed', 
                     user: {
-                        ssn: userInfo.ssn,
-                        firstname: result.data.requestedAttributes.basicUserInfo.name,
-                        surname: result.data.requestedAttributes.basicUserInfo.surname,
-                        fullname: result.data.requestedAttributes.basicUserInfo.name + ' ' + result.data.requestedAttributes.basicUserInfo.surname
+                        id: userInfo.ssn,
+                        firstname: '',
+                        lastname: '',
+                        fullname: ''
                     },
                     extra: {
-                        jwt_token: result.data.details
-                    }};                
+                        jwt_token: result.data.details,
+                    }};  
+                    
+                if (decoded.requestedAttributes.dateOfBirth) result.extra.date_of_birth = decoded.requestedAttributes.dateOfBirth;
+                if (decoded.requestedAttributes.emailAddress) result.extra.primary_email = decoded.requestedAttributes.emailAddress;
+                if (decoded.requestedAttributes.allEmailAddresses) result.extra.email_addresses = decoded.requestedAttributes.allEmailAddresses;
+                if (decoded.requestedAttributes.addresses) result.extra.addresses = decoded.requestedAttributes.addresses;
+                if (decoded.requestedAttributes.customIdentifier) result.extra.custom_identifier = decoded.requestedAttributes.customIdentifier;
+
+                if (decoded.requestedAttributes.basicUserInfo) {
+                    result.user.firstname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name : '',
+                    result.user.lastname =  decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.surname : '',
+                    result.user.fullname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name+' '+decoded.requestedAttributes.basicUserInfo.surname : ''
+                }
+
+                if (decoded.requestedAttributes.ssn) {
+                    result.extra.ssn_number = decoded.requestedAttributes.ssn.ssn;
+                    result.extra.ssn_country = decoded.requestedAttributes.ssn.country;
+                }
+
+                return result;
             default:
                 return {status: 'error', code: 'api_error', description: 'An unknown error occured', details: result.data};
         }    
@@ -262,6 +293,27 @@ async function cancelSignRequest(id) {
   return true;    
 }
 
+async function createCustomIdentifier(id,customid) {
+    var infoType = unPack(this.settings.id_type,this.settings.default_country,id);
+    const [error,result] = await to(this.axios.post(`${this.settings.endpoint}/user/manage/1.0/setCustomIdentifier`, 
+      "setCustomIdentifierRequest="+Buffer.from(JSON.stringify({
+            userInfoType: infoType.userInfoType,
+            userInfo: infoType.userInfo,
+            customIdentifier: customid
+      })).toString('base64')
+  ));    
+  return error ? false : true;
+}
+
+async function deleteCustomIdentifier(customid) {
+    const [error,result] = await to(this.axios.post(`${this.settings.endpoint}/user/manage/1.0/deleteCustomIdentifier`, 
+      "deleteCustomIdentifierRequest="+Buffer.from(JSON.stringify({
+        customIdentifier: customid
+      })).toString('base64')
+  ));    
+  return error ? false : true;
+}
+
 
 module.exports = {
     settings: defaultSettings,
@@ -273,5 +325,10 @@ module.exports = {
     initAuthRequest: initAuthRequest,
     initSignRequest: initSignRequest,
     cancelSignRequest: cancelSignRequest,
-    cancelAuthRequest: cancelAuthRequest
+    cancelAuthRequest: cancelAuthRequest,
+
+    extras: {
+        createCustomIdentifier: createCustomIdentifier,
+        deleteCustomIdentifier: deleteCustomIdentifier
+    }
 }

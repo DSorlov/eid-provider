@@ -106,7 +106,7 @@ async function pollStatus(id) {
             return {
                 status: 'completed', 
                 user: {
-                    ssn: result.data.userAttributes.personalNumber,
+                    id: result.data.userAttributes.personalNumber,
                     firstname: result.data.userAttributes.givenName,
                     surname: result.data.userAttributes.surname,
                     fullname: result.data.userAttributes.name

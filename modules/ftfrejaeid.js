@@ -134,7 +134,7 @@ async function pollStatus(id,self=this) {
         case "COMPLETE":
             return {
                 status: 'completed', 
-                user: {
+                id: {
                     ssn: result.userInfo.subjectIdentifier,
                     firstname: result.userInfo.givenName,
                     surname: result.userInfo.sn,
