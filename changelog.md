@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing for now
+- Fixed default testing config for ftfrejaeid
 
 ## [0.1.3] (2020-06-10)
 
