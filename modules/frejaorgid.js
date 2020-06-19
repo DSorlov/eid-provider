@@ -49,14 +49,6 @@ function initialize(settings) {
     });
 }
 
-function unPack(self,data) {
-    if (typeof data === 'string') {
-        return { ssn: data, country: self.settings.default_country };
-    } else {
-        return { ssn: data.ssn ? data.ssn : data.toString(), country: data.country ? data.country : self.settings.default_country};
-    }
-}
-
 function unPack(default_type,default_country,data) {
 
     if (typeof data === 'string') {
@@ -106,15 +98,12 @@ async function initSignRequest(id,text) {
 }
 
 // Lets structure do speciall stuff
-async function initAddOrgIdRequest(ssn, title, attribute, value) {
-    ssn = unPack(this,ssn);
+async function initAddOrgIdRequest(id, title, attribute, value) {
+    var infoType = unPack(this.settings.id_type,this.settings.default_country,id);
 
     return await initRequest(this,'organisation/management/orgId/1.0/initAdd', "initAddOrganisationIdRequest="+Buffer.from(JSON.stringify({
-        userInfoType: "SSN",
-        userInfo: Buffer.from(JSON.stringify({
-            country: ssn.country,
-            ssn: ssn.ssn
-        })).toString('base64'),    
+        userInfoType: infoType.userInfoType,
+        userInfo: infoType.userInfo,    
         organisationId: {
             title: title,
             identifierName: attribute,
@@ -203,6 +192,14 @@ async function pollStatus(self,endpoint,data) {
     if (result.data.code)
     {
         switch(result.data.code) {
+            case 1012:
+                return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request', details: 'Not found'};
+            case 1005: 
+                return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request', details: 'Blocked application'};
+            case 2000:
+                return {status: 'error', code: 'already_in_progress', description: 'A transaction was already pending for this SSN'};
+            case 1002:
+                return {status: 'error', code: 'request_ssn_invalid', description: 'The supplied SSN is not valid'};
             case 1100:
                 return {status: 'error', code: 'request_id_invalid', description: 'The supplied request cannot be found'};
             default:

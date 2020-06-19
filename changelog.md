@@ -4,9 +4,9 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Fixed default testing config for ftfrejaeid
+- Nothing right now
 
-## [0.1.3] (2020-06-10)
+## [0.1.3] (2020-06-19)
 
 ### Breaking Changes
 - Renamed ssn in output object to id which is more universal due to HSA-id and Freja OrgID which can ingest and send out other forms of id and to prepare for any additional forms of other identity types that we wish to invoke. Currently only in use by frejaeid, frejaorgid and ghsaid.
@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ### Fixed
 - Fixed bug in Freja OrgID preventing successfull verification during certain conditions.
+- Fixed default testing config for ftfrejaeid
+- Fixed unpacking in frejaeid and cases where errors where treated as successes
 
 ## [0.1.2] (2020-06-09)
 - Fixed broken authentication (gbankid, gfrejaeid) for Svensk e-Idenitet
