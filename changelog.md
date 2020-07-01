@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing right now
 
-## [0.1.3] (2020-06-19)
+## [0.1.3] (2020-07-01)
 
 ### Breaking Changes
 - Renamed ssn in output object to id which is more universal due to HSA-id and Freja OrgID which can ingest and send out other forms of id and to prepare for any additional forms of other identity types that we wish to invoke. Currently only in use by frejaeid, frejaorgid and ghsaid.
@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Freja OrgID functions for creating/deleting organizational ids created (frejaorgid)
 - Added more options for invocation and data results for Freja eID (frejaeid)
 - Added support for adding and removing CUSTOM_IDENTIFIERs. (frejaeid)
+- Multiple certificates to validate freja eid jwt (frejaeid, frejaorgid)
 
 ### Fixed
 - Fixed bug in Freja OrgID preventing successfull verification during certain conditions.

@@ -38,7 +38,10 @@ id_type is one of ORG_ID,SSN,EMAIL,PHONE
 endpoint:  'https://services.prod.frejaeid.com',
 client_cert:  '',
 ca_cert:  fs.readFileSync(`./certs/bankid_prod.ca`),
-jwt_cert:  fs.readFileSync(`./certs/frejaeid_prod.jwt`),
+jwt_cert: {
+    'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt`),
+    'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt`)
+},
 password:  '',
 default_country: 'SE',
 minimum_level: 'EXTENDED',
@@ -50,7 +53,10 @@ attribute_list: 'EMAIL_ADDRESS,RELYING_PARTY_USER_ID,BASIC_USER_INFO'
 endpoint:  'https://services.test.frejaeid.com',
 client_cert:  '',
 ca_cert:  fs.readFileSync(`./certs/frejaeid_test.ca`),
-jwt_cert:  fs.readFileSync(`./certs/frejaeid_test.jwt`),
+jwt_cert:  {
+    '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(__dirname +`/../certs/frejaeid_test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt`),
+    'HwMHK_gb3_iuNF1advMtlG0-fUs': fs.readFileSync(__dirname +`/../certs/frejaeid_test_HwMHK_gb3_iuNF1advMtlG0-fUs.jwt`)
+},
 password:  '',
 default_country: 'SE',
 minimum_level: 'EXTENDED',

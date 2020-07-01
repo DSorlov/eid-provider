@@ -9,7 +9,10 @@ const defaultSettings = {
         endpoint: 'https://services.prod.frejaeid.com',
         client_cert: '',
         ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_prod.ca`),
-        jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_prod.jwt`),
+        jwt_cert: {
+            'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt`),
+            'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt`)
+        },
         password: '',
         default_country: 'SE',
         minimumLevel: 'EXTENDED',
@@ -20,7 +23,10 @@ const defaultSettings = {
         endpoint: 'https://services.test.frejaeid.com',
         client_cert: fs.readFileSync(__dirname +'/../certs/frejaeid_test.pfx'),
         ca_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_test.ca`),
-        jwt_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_test.jwt`),
+        jwt_cert: {
+            '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(__dirname +`/../certs/frejaeid_test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt`),
+            'HwMHK_gb3_iuNF1advMtlG0-fUs': fs.readFileSync(__dirname +`/../certs/frejaeid_test_HwMHK_gb3_iuNF1advMtlG0-fUs.jwt`)
+        },
         password: 'test',
         default_country: 'SE',
         minimumLevel: 'EXTENDED',
@@ -224,7 +230,8 @@ async function pollStatus(self,endpoint,data) {
                 try {
                     //Trying to be efficient and reuse our userInfo object we sent in
                     //Make sure the data we got is signed and fail if verification fails
-                    var decoded = jwt.verify(result.data.details, self.settings.jwt_cert);
+                    var jwtInfo = jwt.decode(result.data.details, { complete: true });
+                    var decoded = jwt.verify(result.data.details, self.settings.jwt_cert[jwtInfo.header.x5t]);
                 } catch(err) {
                     return {status: 'error', code: 'api_error', description: 'The signature integrity validation failed'};
                 }
