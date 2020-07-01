@@ -4,7 +4,25 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing for now
+- Nothing right now
+
+## [0.1.3] (2020-07-01)
+
+### Breaking Changes
+- Renamed ssn in output object to id which is more universal due to HSA-id and Freja OrgID which can ingest and send out other forms of id and to prepare for any additional forms of other identity types that we wish to invoke. Currently only in use by frejaeid, frejaorgid and ghsaid.
+
+### Added
+- General support for extra functions in modules 
+- Added support for SITHS ID via GrandID by Svensk e-Identitet (ghsaid)
+- Freja OrgID functions for creating/deleting organizational ids created (frejaorgid)
+- Added more options for invocation and data results for Freja eID (frejaeid)
+- Added support for adding and removing CUSTOM_IDENTIFIERs. (frejaeid)
+- Multiple certificates to validate freja eid jwt (frejaeid, frejaorgid)
+
+### Fixed
+- Fixed bug in Freja OrgID preventing successfull verification during certain conditions.
+- Fixed default testing config for ftfrejaeid
+- Fixed unpacking in frejaeid and cases where errors where treated as successes
 
 ## [0.1.2] (2020-06-09)
 - Fixed broken authentication (gbankid, gfrejaeid) for Svensk e-Idenitet
@@ -34,6 +52,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.3]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.3
 [0.1.2]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.2
 [0.1.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.1
 [0.1.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.0

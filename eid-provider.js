@@ -22,6 +22,13 @@ module.exports = function(provider) {
         module.cancelSignRequest = library.cancelSignRequest;
         module.cancelAuthRequest = library.cancelAuthRequest;
 
+        // Support for exposing additional methods.
+        // Since these are asymetrical they do NOT need to conform
+        // to any form of input or output standard
+        if (library.extras) for(var extraFunction in library.extras) {
+            module[extraFunction] = library.extras[extraFunction];
+        }
+
         // Give it to our master
         return module;
 

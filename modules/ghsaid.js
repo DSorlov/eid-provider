@@ -36,8 +36,8 @@ function unPack(data) {
     if (typeof data === 'string') {
         return data;
     } else {
-        if (data.ssn) {
-            return data.ssn;
+        if (data.hsaid) {
+            return data.hsaid;
         } else {
             return data.toString();
         }
@@ -58,7 +58,7 @@ async function pollStatus(id) {
             return {status: 'error', code: 'system_error', description: error.code, details: error.message}
         }
 
-        if (result.data.errorObject.code==='BANKID_MSG') {
+        if (result.data.errorObject.code==='NETID_ACCESS_MESSAGE') {
             if (result.data.errorObject.message==='Session id does not exist') {
                 return {status: 'error', code: 'request_id_invalid', description: 'The supplied request cannot be found'};
             } else{
@@ -73,24 +73,20 @@ async function pollStatus(id) {
     if (result.data.errorObject) {
         if (result.data.errorObject.code==='NOTLOGGEDIN') {
            return {status: 'error', code: 'api_error', description: 'Probably using the wrong key', details: result.data};
-        } else if (result.data.errorObject.code==='BANKID_MSG') {
+        } else if (result.data.errorObject.code==='NETID_ACCESS_MESSAGE') {
             if (result.data.errorObject.message.hintCode) {
                 switch(result.data.errorObject.message.hintCode) {
-                    case "expiredTransaction":
+                    case "EXPIRED_TRANSACTION":
                         return {status: 'error', code: 'expired_transaction', description: 'The transaction was not completed in time'};
-                    case "outstandingTransaction":
+                    case "OUTSTANDING_TRANSACTION":
                         return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
                     case "NOTLOGGEDIN":
                         return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
-                    case "userSign":
+                    case "USER_SIGN":
                         return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
-                    case "noClient":
-                        return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
-                    case "userCancel":
-                        return {status: 'error', code: 'cancelled_by_user', description: 'The user declined transaction'};
-                    case "cancelled":
+                    case "CANCELLED":
                         return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
-                    case "startFailed":
+                    case "START_FAILED":
                         return {status: 'error', code: 'initialization_error', description: 'The IdP was unable to start sesson'};
                     default:
                         return {status: "error", code: 'api_error', description: 'A communications error occured', details: result.data.errorObject.message};
@@ -122,13 +118,13 @@ async function pollStatus(id) {
     }    
  }
 
- async function authRequest(ssn, initcallback=undefined, statuscallback=undefined) {
-    var initresp = await this.initAuthRequest(ssn);
+ async function authRequest(hsaid, initcallback=undefined, statuscallback=undefined) {
+    var initresp = await this.initAuthRequest(hsaid);
     return await followRequest(this,initresp,initcallback,statuscallback);
 }
 
-async function signRequest(ssn, text, initcallback=undefined, statuscallback=undefined) {
-    var initresp = await this.initSignRequest(ssn,text);
+async function signRequest(hsaid, text, initcallback=undefined, statuscallback=undefined) {
+    var initresp = await this.initSignRequest(hsaid,text);
     return await followRequest(this,initresp,initcallback,statuscallback);
 }
 
@@ -163,30 +159,26 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
     }
 }
 
-async function initAuthRequest(ssn){
-    ssn = unPack(ssn);
+async function initAuthRequest(hsaid){
+    hsaid = unPack(hsaid);
 
     const params = new URLSearchParams();
     params.append('callbackUrl', "https://localhost/");
-    params.append('personalNumber', ssn);
-    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('personalNumber', hsaid);
     params.append('gui', false);
     params.append('thisDevice', false);
-    params.append('mobileBankId', true);
 
     return await initRequest(this, params);
 }
 
-async function initSignRequest(ssn,text){
-    ssn = unPack(ssn);
+async function initSignRequest(hsaid,text){
+    hsaid = unPack(hsaid);
 
     const params = new URLSearchParams();
     params.append('callbackUrl', "https://localhost/");
-    params.append('personalNumber', ssn);
-    params.append('pushNotification', "TGVnaXRpbWVyaW5nCg==");
+    params.append('personalNumber', hsaid);
     params.append('gui', false);
     params.append('thisDevice', false);
-    params.append('mobileBankId', true);
     params.append('userVisibleData', Buffer.from(text).toString('base64'));
 
     return await initRequest(this, params);
@@ -199,15 +191,15 @@ async function initRequest(self,data) {
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
         if (result.data.errorObject) {
-            if (result.data.errorObject.code==='BANKID_SIGN_NOT_ALLOWED') {
-                return {status: 'error', code: "api_error", description: 'Key is not allowed for document signing'};
+            if (result.data.errorObject.code==='INVALID_HSA_ID'||result.data.errorObject.code==='UNKNOWN_USER') {
+                return {status: 'error', code: "api_error", description: 'The specified HSA id could not be found'};
             } else {
                 return {status: 'error', code: "api_error", description: 'A communications error occured', details: result.errorObject};
             }
         } else {
             return {status: 'initialized', id: result.data.sessionId, extra: {
                 autostart_token: result.data.autoStartToken,
-                autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
+                autostart_url: "netid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
             }};
         }
     } else {
@@ -218,10 +210,10 @@ async function initRequest(self,data) {
         if (result.data.errorCode) {
             switch(result.data.errorCode)  {
                 case "alreadyInProgress":
-                    return {status: 'error', code: 'already_in_progress', description: 'A transaction was already pending for this SSN'};
+                    return {status: 'error', code: 'already_in_progress', description: 'A transaction was already pending for this hsaid'};
                 case "invalidParameters":
                     if (result.data.details==='Incorrect personalNumber') {
-                        return {status: 'error', code: 'request_ssn_invalid', description: 'The supplied SSN is not valid'};
+                        return {status: 'error', code: 'request_hsaid_invalid', description: 'The supplied hsaid is not valid'};
                     } else if (result.data.details==='Invalid userVisibleData') {
                         return {status: 'error', code: 'request_text_invalid', description: 'The supplied agreement text is not valid'};
                     } else {

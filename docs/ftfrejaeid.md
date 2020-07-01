@@ -26,6 +26,6 @@ policy: ''
 ```
 endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2?wsdl',
 ca_cert: fs.readFileSync(`./certs/ftbankid_test.ca`),
-display_name: 'test',
+display_name: 'Test av Freja eID',
 policy: 'logtest020'
 ```

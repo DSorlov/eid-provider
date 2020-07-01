@@ -15,7 +15,7 @@ const defaultSettings = {
     testing: {
         endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2?wsdl',
         ca_cert: fs.readFileSync(__dirname +`/../certs/ftfrejaeid_test.ca`),
-        display_name: 'test',
+        display_name: 'Test av Freja eID',
         policy: 'logtest020'
     }        
 }
@@ -134,7 +134,7 @@ async function pollStatus(id,self=this) {
         case "COMPLETE":
             return {
                 status: 'completed', 
-                user: {
+                id: {
                     ssn: result.userInfo.subjectIdentifier,
                     firstname: result.userInfo.givenName,
                     surname: result.userInfo.sn,
