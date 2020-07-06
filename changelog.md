@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing right now
 
+## [0.1.4] (2020-07-06)
+
+### Fixed
+- Fixed broken handing of objects into frejaeid and frejaorgid
+- Fixed broken default certificates for production in frejaeid and frejaorgid
+
 ## [0.1.3] (2020-07-01)
 
 ### Breaking Changes
@@ -52,6 +58,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.4]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.4
 [0.1.3]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.3
 [0.1.2]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.2
 [0.1.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.1
