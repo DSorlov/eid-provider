@@ -8,7 +8,7 @@ const defaultSettings = {
     production: {
         endpoint: 'https://services.prod.frejaeid.com',
         client_cert: '',
-        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_prod.ca`),
+        ca_cert: fs.readFileSync(__dirname +`/../certs/frejaeid_prod.ca`),
         jwt_cert: {
             'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt`),
             'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(__dirname +`/../certs/frejaeid_prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt`)
@@ -46,7 +46,7 @@ function initialize(settings) {
         httpsAgent: new https.Agent({
           pfx: settings.client_cert,
           passphrase: settings.password,
-          ca: settings.ca_cert,
+          ca: settings.ca_cert
         }),     
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ function unPack(default_type,default_country,data) {
 
         return { 
                 userInfoType: default_type,
-                userInfo: default_type==='SSN' ? Buffer.from(JSON.stringify({country: default_country,ssn: data})).toString('base64') : data
+                userInfo: default_type==='SSN' ? Buffer.from(JSON.stringify({country: default_country,ssn: value})).toString('base64') : value
         } 
     }
 }
