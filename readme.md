@@ -1,5 +1,5 @@
 [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](#)
-[![version](https://img.shields.io/badge/version-0.1.5-green.svg)](#)
+[![version](https://img.shields.io/badge/version-0.1.6-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2020.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid-provider)
@@ -35,6 +35,7 @@ There are basically right now two main types of integrations: one is working dir
 | Mobilt BankID | [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
 | Freja eID | [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Production** |
 | SITHS Mobile | [ghsaid](docs/ghsaid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Production |
+| Mobilt BankID | [gbankid](docs/idkbankid.md) | IDKollen | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
 
 <sup>* The API key we have been supplied with does not allow for freja authentication so largely untested but complies with api.<br/>
 ** GrandID do not officially support Freja eID for silent logins. Using some ugly workarounds tbh, so not for production I think imho.
