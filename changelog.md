@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ### Fixed
 - Added error handling on internal errors when following requests, should create more stable library (all modules).
+- Verified API and updated settings for Funktionstjänster (CGI) Freja eID module (ftfrejaeid)
 
 ## [0.1.5] (2020-09-01)
 
