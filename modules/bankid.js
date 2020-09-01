@@ -7,14 +7,14 @@ const defaultSettings = {
     production: {
         endpoint: 'https://appapi2.bankid.com/rp/v5',
         client_cert: '',
-        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_prod.ca`),
+        ca_cert: fs.readFileSync(__dirname +'/../certs/bankid_prod.ca'),
         allowFingerprint: true,
         password: ''
     },
     testing: {
         endpoint: 'https://appapi2.test.bankid.com/rp/v5',
         client_cert: fs.readFileSync(__dirname +'/../certs/bankid_test.pfx'),
-        ca_cert: fs.readFileSync(__dirname +`/../certs/bankid_test.ca`),
+        ca_cert: fs.readFileSync(__dirname +'/../certs/bankid_test.ca'),
         allowFingerprint: true,
         password: 'qwerty123'
     }        
@@ -31,7 +31,7 @@ function initialize(settings) {
         httpsAgent: new https.Agent({
           pfx: settings.client_cert,
           passphrase: settings.password,
-          ca: settings.ca_cert,
+          ca: settings.ca_cert
         }),
         headers: {
           'Content-Type': 'application/json',
