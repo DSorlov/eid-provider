@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing right now
 
-## [0.1.6] (XXXX-XX-XX)
+## [0.1.6] (2020-09-02)
 
 ### Added
 - Added IDKollen API provider (idkbankid)
