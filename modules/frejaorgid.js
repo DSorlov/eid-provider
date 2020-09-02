@@ -321,6 +321,10 @@ async function followRequest(self, pollMethod, initresp, initcallback=undefined,
         if (pollMethod=='sign') [error, pollresp] = await to(self.pollSignStatus(initresp.id,self));
         if (pollMethod=='add') [error, pollresp] = await to(self.pollAddOrgIdStatus(initresp.id,self));
         
+        if (error) {
+            return {status: 'error', code: 'system_error', description: 'Internal module error', details: error.message}
+        }
+
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error'||pollresp.status==='created') { return pollresp; }
 

@@ -152,6 +152,10 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
         // Retreive current status
         const [error, pollresp] = await to(self.pollAuthStatus(initresp.id));
 
+        if (error) {
+            return {status: 'error', code: 'system_error', description: 'Internal module error', details: error.message}
+        }
+
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
 

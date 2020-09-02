@@ -87,11 +87,11 @@ function createClient(self,uri,method,options) {
 
 async function pollStatus(id,self=this) {
 
-    if (id.length!=73) {
+    if (id.length!=102) {
         return {status: 'error', code: 'request_id_invalid', description: 'The supplied request cannot be found'}; 
     }
 
-    var orderRef = id.substring(37,73);
+    var orderRef = id.substring(37,102);
     var transactionId = id.substring(0,36);
 
     var [error,result] = await to(createClient(self,'GrpServicePortType/CollectRequest', 'Collect', {
@@ -138,11 +138,10 @@ async function pollStatus(id,self=this) {
                     ssn: result.userInfo.subjectIdentifier,
                     firstname: result.userInfo.givenName,
                     surname: result.userInfo.sn,
-                    fullname: result.userInfo.displayName
+                    fullname: result.userInfo.givenName + ' ' + result.userInfo.sn
                 },
                 extra: {
-                    signature: result.validationInfo.signature,
-                    ocspResponse: result.validationInfo.ocspResponse}
+                    signature: result.validationInfo.signature}
                 };
         default:
             return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data};
@@ -182,6 +181,10 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 
         // Retreive current status
         const [error, pollresp] = await to(pollStatus(initresp.id,self));
+
+        if (error) {
+            return {status: 'error', code: 'system_error', description: 'Internal module error', details: error.message}
+        }
 
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }

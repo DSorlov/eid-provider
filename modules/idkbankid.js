@@ -5,18 +5,14 @@ const to = require('await-to-js').default;
 
 const defaultSettings = {
     production: {
-        endpoint: 'https://appapi2.bankid.com/rp/v5',
-        client_cert: '',
-        ca_cert: fs.readFileSync(__dirname +'/../certs/bankid_prod.ca'),
-        allowFingerprint: true,
-        password: ''
+        endpoint: 'https://api.idkollen.se/v2',
+        key: '',
+        webhookkey: ''
     },
     testing: {
-        endpoint: 'https://appapi2.test.bankid.com/rp/v5',
-        client_cert: fs.readFileSync(__dirname +'/../certs/bankid_test.pfx'),
-        ca_cert: fs.readFileSync(__dirname +'/../certs/bankid_test.ca'),
-        allowFingerprint: true,
-        password: 'qwerty123'
+        endpoint: 'https://stgapi.idkollen.se/v2',
+        key: '',
+        webhookkey: ''
     }        
 }
 
@@ -28,11 +24,7 @@ function initialize(settings) {
     //TODO: Validate the incomming object for completeness.
     this.settings = settings;
     this.axios = axioslibrary.create({
-        httpsAgent: new https.Agent({
-          pfx: settings.client_cert,
-          passphrase: settings.password,
-          ca: settings.ca_cert
-        }),
+        httpsAgent: new https.Agent(),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -54,69 +46,50 @@ function unPack(data) {
 // Check the status of an existing request
 async function pollStatus(id,self=this) {
 
+    var webhookId = id.substring(37,73);
+    var orderRef = id.substring(0,36);
+
     // Check the transaction via API
-    const [error, response] = await to(self.axios.post(`${self.settings.endpoint}/collect`, {
-        orderRef: id
-    }));
+    const [error, response] = await to(self.axios.get(`https://webhook.site/token/${webhookId}/request/latest/raw`, {}));
+    
 
     // Since the API is returning error on pending, we consolidate and handle
     // it further down
     var result = error ? error.response : response;
 
-    if (error) {
-        if (!error.response && error.isAxiosError) {
-            return {status: 'error', code: 'system_error', description: error.code, details: error.message}
-        }
-        
-        if (result.data.errorCode) {
-            switch(result.data.errorCode)  {
-                case "invalidParameters":
-                    return {status: 'error', code: 'request_id_invalid', description: 'The supplied request cannot be found'};
-                default:
-                    return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data.details};
-            }
-        } else {
-            return {status: 'error', code: "api_error", description: 'A communications error occured', details: result.data};
-        }    
+    if (error && result.status==404) {
+        return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
     }
 
-    // Check if a error exists (there is a hintCode in all error messages)
-    if (result.data.hintCode) {
-        switch(result.data.hintCode) {
-            case "expiredTransaction":
-                return {status: 'error', code: 'expired_transaction', description: 'The transaction was not completed in time'};
-            case "outstandingTransaction":
-                return {status: 'pending', code: 'pending_notdelivered', description: 'The transaction has not initialized yet'};
-            case "userSign":
-                return {status: 'pending', code: 'pending_user_in_app', description: 'User have started the app'};
-            case "noClient":
-                return {status: 'pending', code: 'pending_delivered', description: 'Delivered to mobile phone'};
-            case "userCancel":
-                return {status: 'error', code: 'cancelled_by_user', description: 'The user declined transaction'};
-            case "cancelled":
-                return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
-            default:
-                return {status: result.data.status, code: 'api_error', description: 'A communications error occured', details: result.data.hintCode};
+    // Delete our temporary hook
+    var webhook_data = { data: { } };
+    if (self.settings.webhookkey!=='') {
+        webhook_data.headers = {
+            'Api-Key': self.settings.webhookkey
         }
+    }
+    await to(self.axios.delete(`https://webhook.site/token/${webhookId}`));
+
+    if (result.message) {
+            return {status: 'error', code: 'system_error', description: error.status, details: error.message}
+    }
+
+    // We should actually only get here if we complete but lets handle the unlikely
+    if (result.data.result==="completed") {
+        return {
+            status: 'completed', 
+            user: {
+                id: result.data.pno,
+                firstname: '',
+                surname: '',
+                fullname: result.data.name
+            },
+            extra: {
+                checksum: result.data.checksum}
+            };
     } else {
-        // We should actually only get here if we complete but lets handle the unlikely
-        if (result.data.status==="complete") {
-            return {
-                status: 'completed', 
-                user: {
-                    id: result.data.completionData.user.personalNumber,
-                    firstname: result.data.completionData.user.givenName,
-                    surname: result.data.completionData.user.surname,
-                    fullname: result.data.completionData.user.name
-                },
-                extra: {
-                    signature: result.data.completionData.signature,
-                    ocspResponse: result.data.completionData.ocspResponse}
-                };
-        } else {
-            //This will never happen. Or it should not. Probably gonna happen.
-            return {status: 'error', code: 'api_error', description: 'A communications error occured', details: result.data};
-        }
+        //This will never happen. Or it should not. Probably gonna happen.
+        return {status: 'error', code: 'cancelled_by_idp', description: 'The IdP have cancelled the request'};
     }
 }
 
@@ -155,7 +128,7 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
         if (error) {
             return {status: 'error', code: 'system_error', description: 'Internal module error', details: error.message}
         }
-        
+
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
 
@@ -171,11 +144,10 @@ async function followRequest(self,initresp, initcallback=undefined, statuscallba
 async function initAuthRequest(ssn) {
     ssn = unPack(ssn);
     return await initRequest(this,'auth', {
-        endUserIp: '127.0.0.1',
-        personalNumber: ssn,
-        requirement: {
-            allowFingerprint: this.settings.allowFingerprint
-        }});
+        ipAddress: '127.0.0.1',
+        pno: ssn,
+        callbackUrl: 'https://webhook.site/'
+    });
 }
 
 // Lets structure a call for a sign request and return the worker
@@ -183,18 +155,43 @@ async function initSignRequest(ssn,text) {
     ssn = unPack(ssn);
     return await initRequest(this,'sign', {
         endUserIp: '127.0.0.1',
-        personalNumber: ssn,
-        userVisibleData: Buffer.from(text).toString('base64'),
-        requirement: {
-            allowFingerprint: this.settings.allowFingerprint
-        }});
+        pno: ssn,
+        message: text,
+        callbackUrl: 'https://webhook.site/'
+    });
 }
 
 // Initialize and imediatly return with the id of the request
 async function initRequest(self,endpoint,data) {
 
+    // Create a temporary webhook to catch the response
+    // The IDKollen API is sadly a callback API so workaround is needed.
+
+    var webhook_postdata = { data: {
+        default_status: 200,
+        default_content: "Ok",
+        default_content_type: "text/html",
+        timeout: 0,
+        cors: false,
+        expiry: true
+    } };
+    if (self.settings.webhookkey!=='') {
+        webhook_postdata.headers = {
+            'Api-Key': self.settings.webhookkey
+        }
+    }
+
+    const [webhook_error, webhook_response] = await to(self.axios.post(`https://webhook.site/token`, webhook_postdata));
+
+    // Make sure we generated a URI before continuing
+    if(webhook_error) {
+        return {status: 'error', code: 'system_error', description: webhook_error.code, details: error.message}
+    }  
+    var responseUiid = webhook_response.data.uuid;
+    data.callbackUrl = data.callbackUrl + responseUiid;
+
     // Call BankID. We are using a fake remote address as most APIs do not have this
-    const [error, response] = await to(self.axios.post(`${self.settings.endpoint}/${endpoint}`, data));
+    const [error, response] = await to(self.axios.post(`${self.settings.endpoint}/${self.settings.key}/${endpoint}`, data));
       
     // Since the API is returning error on pending, we consolidate and handle
     // it further down
@@ -202,7 +199,7 @@ async function initRequest(self,endpoint,data) {
 
     // Check if we get a success message or a failure (http) from the api, return standard response structure
     if(!error) {
-        return {status: 'initialized', id: result.data.orderRef, extra: {
+        return {status: 'initialized', id: result.data.orderRef+'-'+responseUiid, extra: {
             autostart_token: result.data.autoStartToken,
             autostart_url: "bankid:///?autostarttoken="+result.data.autoStartToken+"&redirect=null"
         }};
@@ -211,8 +208,8 @@ async function initRequest(self,endpoint,data) {
             return {status: 'error', code: 'system_error', description: error.code, details: error.message}
         }
 
-        if (result.data.errorCode) {
-            switch(result.data.errorCode)  {
+        if (result.data.message) {
+            switch(result.data.message)  {
                 case "alreadyInProgress":
                     return {status: 'error', code: 'already_in_progress', description: 'A transaction was already pending for this SSN'};
                 case "invalidParameters":
@@ -234,9 +231,18 @@ async function initRequest(self,endpoint,data) {
 
 // Lets cancel pending requests, dont really care about the results here
 async function cancelRequest(id) {
-        await to(this.axios.post(`${this.settings.endpoint}/cancel`, {
-            orderRef: id
-        }));
+
+        var webhookId = id.substring(37,73);
+        var orderRef = id.substring(0,36);
+
+        var webhook_data = { data: { } };
+        if (self.settings.webhookkey!=='') {
+            webhook_data.headers = {
+                'Api-Key': self.settings.webhookkey
+            }
+        }
+
+        await to(this.axios.delete(`https://webhook.site/token/${webhookId}`, webhook_data));
         return true;            
 }
 

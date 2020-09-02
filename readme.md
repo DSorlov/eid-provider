@@ -1,5 +1,5 @@
 [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](#)
-[![version](https://img.shields.io/badge/version-0.1.5-green.svg)](#)
+[![version](https://img.shields.io/badge/version-0.1.7-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2020.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid-provider)
@@ -31,13 +31,13 @@ There are basically right now two main types of integrations: one is working dir
 | Freja eID | [frejaeid](docs/frejaeid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
 | Freja eID | [frejaorgid](docs/frejaorgid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
 | Mobilt BankID | [ftbankid](docs/ftbankid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
-| Freja eID | [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Not tested* |
+| Freja eID | [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
 | Mobilt BankID | [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
-| Freja eID | [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Production** |
+| Freja eID | [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Stable* |
 | SITHS Mobile | [ghsaid](docs/ghsaid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Production |
+| Mobilt BankID | [gbankid](docs/idkbankid.md) | IDKollen | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
 
-<sup>* The API key we have been supplied with does not allow for freja authentication so largely untested but complies with api.<br/>
-** GrandID do not officially support Freja eID for silent logins. Using some ugly workarounds tbh, so not for production I think imho.
+<sup>* GrandID do not officially support Freja eID for silent logins. Using some ugly workarounds tbh. Evaluate before production!
 </sup>
 
 The configuration options should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.

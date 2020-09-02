@@ -269,6 +269,10 @@ async function followRequest(self, pollMethod, initresp, initcallback=undefined,
 
         const [error, pollresp] = pollMethod=='auth' ? await to(self.pollAuthStatus(initresp.id,self)) : await to(self.pollSignStatus(initresp.id,self)) 
 
+        if (error) {
+            return {status: 'error', code: 'system_error', description: 'Internal module error', details: error.message}
+        }
+
         // Check if we we have a definite answer
         if (pollresp.status==='completed'||pollresp.status==='error') { return pollresp; }
 
