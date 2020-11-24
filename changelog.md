@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ### Fixed
 - Updated dependency versions for lodash due to security issues in that library
+- Updated dependency versions for xml-crypto due to security issues in that library
 
 ## [0.1.7] (2020-09-02)
 
