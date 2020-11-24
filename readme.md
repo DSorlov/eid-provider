@@ -1,5 +1,5 @@
 [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](#)
-[![version](https://img.shields.io/badge/version-0.1.7-green.svg)](#)
+[![version](https://img.shields.io/badge/version-0.1.8-green.svg)](#)
 [![maintained](https://img.shields.io/maintenance/yes/2020.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid-provider)
@@ -29,7 +29,7 @@ There are basically right now two main types of integrations: one is working dir
 | --- | --- | --- | --- | --- | --- | --- |
 | BankID | [bankid](docs/bankid.md) | BankID | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
 | Freja eID | [frejaeid](docs/frejaeid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
-| Freja eID | [frejaorgid](docs/frejaorgid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
+| Freja eID Org ID | [frejaorgid](docs/frejaorgid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
 | Mobilt BankID | [ftbankid](docs/ftbankid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
 | Freja eID | [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
 | Mobilt BankID | [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |

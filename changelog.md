@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing right now
 
+## [0.1.8] (2020-11-24)
+
+### Fixed
+- Updated dependency versions for lodash due to security issues in that library
+- Updated dependency versions for xml-crypto due to security issues in that library
+
 ## [0.1.7] (2020-09-02)
 
 ### Added
@@ -72,6 +78,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.8]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.8
 [0.1.7]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.7
 [0.1.5]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.5
 [0.1.4]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.4
