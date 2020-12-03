@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing right now
+- Fix for deferred authentication failing with signature failure (frejaeid)
 
 ## [0.1.8] (2020-11-24)
 
@@ -78,6 +78,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.9]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.9
 [0.1.8]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.8
 [0.1.7]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.7
 [0.1.5]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.5
