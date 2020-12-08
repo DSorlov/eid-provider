@@ -237,7 +237,6 @@ async function pollStatus(self,endpoint,data) {
                 }
 
                 if (!result.data.requestedAttributes) {
-                    var userInfo = JSON.parse(decoded.userInfo);
                     return {
                         status: 'created',
                         jwt_token: result.data.details,
@@ -365,6 +364,17 @@ async function cancelAddOrgIdRequest(id) {
   return true;    
 }
 
+async function getOrgIdList() {    
+    const [error,response] = await to(this.axios.post(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`, ""));    
+    var result = error ? error.response : response;
+
+    if (!result.response && result.isAxiosError) {
+      return {status: 'error', code: 'system_error', description: error.code, details: error.message}
+    }
+
+    return { status: 'completed', users: result.data.userInfos }
+}
+
 async function deleteOrgIdRequest(id) {
     const [error,response] = await to(this.axios.post(`${this.settings.endpoint}/organisation/management/orgId/1.0/delete`, 
       "deleteOrganisationIdRequest="+Buffer.from(JSON.stringify({
@@ -414,6 +424,7 @@ module.exports = {
         pollAddOrgIdStatus: pollAddOrgIdStatus,
         initAddOrgIdRequest: initAddOrgIdRequest,
         cancelAddOrgIdRequest: cancelAddOrgIdRequest,
-        deleteOrgIdRequest: deleteOrgIdRequest
+        deleteOrgIdRequest: deleteOrgIdRequest,
+        getOrgIdList: getOrgIdList
     }
 }
