@@ -64,7 +64,7 @@ function unPack(default_type,default_country,data) {
     } else {
         var value = data.toString();
         var country = default_country;
-        if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE') default_type = data.type;
+        if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE' || data.type === 'INFERRED') default_type = data.type;
         if (data.country === 'SE' || data.country === 'FI' || data.country === 'DK' || data.country === 'NO') country = data.country;
         if (data[default_type.toLowerCase()]) value = data[default_type.toLowerCase()];
 

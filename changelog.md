@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Fix for deferred authentication failing with signature failure (frejaeid)
 - Implementing getAll (frejaorgid)
 - Fixed broken creation data return if created by other than SSN (frejaorgid)
+- Fixed missing DEFERRED as datatype (frejaorgid,frejaeid)
 
 ## [0.1.8] (2020-11-24)
 
