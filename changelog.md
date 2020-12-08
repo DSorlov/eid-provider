@@ -4,8 +4,15 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Fix for deferred authentication failing with signature failure (frejaeid)
+- Nothing right now
+
+## [0.1.9] (2020-12-08)
+
+### Added
 - Implementing getAll (frejaorgid)
+
+### Fixed
+- Fix for deferred authentication failing with signature failure (frejaeid)
 - Fixed broken creation data return if created by other than SSN (frejaorgid)
 - Fixed missing DEFERRED as datatype (frejaorgid,frejaeid)
 
