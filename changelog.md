@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 - Nothing right now
 
+## [0.1.9] (2020-12-08)
+
+### Added
+- Implementing getAll (frejaorgid)
+
+### Fixed
+- Fix for deferred authentication failing with signature failure (frejaeid)
+- Fixed broken creation data return if created by other than SSN (frejaorgid)
+- Fixed missing DEFERRED as datatype (frejaorgid,frejaeid)
+
 ## [0.1.8] (2020-11-24)
 
 ### Fixed
@@ -78,6 +88,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.1.9]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.9
 [0.1.8]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.8
 [0.1.7]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.7
 [0.1.5]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.5

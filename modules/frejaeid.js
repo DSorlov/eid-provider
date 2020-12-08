@@ -64,7 +64,7 @@ function unPack(default_type,default_country,data) {
     } else {
         var value = data.toString();
         var country = default_country;
-        if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE') default_type = data.type;
+        if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE' || data.type === 'INFERRED') default_type = data.type;
         if (data.country === 'SE' || data.country === 'FI' || data.country === 'DK' || data.country === 'NO') country = data.country;
         if (data[default_type.toLowerCase()]) value = data[default_type.toLowerCase()];
 
@@ -195,7 +195,23 @@ async function pollStatus(self,endpoint,data) {
                     //Make sure the data we got is signed and fail if verification fails
                     var jwtInfo = jwt.decode(result.data.details, { complete: true });
                     var decoded = jwt.verify(result.data.details, self.settings.jwt_cert[jwtInfo.header.x5t]);
-                    var userInfo = JSON.parse(decoded.userInfo)
+                    var userId = '';
+                    if (decoded.userInfo==="N/A") {
+                        if (decoded.requestedAttributes.ssn) {
+                            userInfo = decoded.requestedAttributes.ssn.ssn;
+                        } else if (decoded.requestedAttributes.emailAddress) {
+                            userInfo = decoded.requestedAttributes.emailAddress;
+                        } else if (decoded.requestedAttributes.relyingPartyUserId) {
+                            userInfo = decoded.requestedAttributes.relyingPartyUserId;
+                        } else {
+                            return {status: 'error', code: 'api_error', description: 'Authentication successfull but no discriminatory identity found'};
+                        }
+                    } else if (decoded.userInfo==="SSN") {
+                        var tempInfo = JSON.parse(decoded.userInfo)
+                        userInfo = tempInfo.ssn;
+                    } else {
+                        userInfo = decoded.userInfo
+                    }
                 } catch(err) {
                     return {status: 'error', code: 'api_error', description: 'The signature integrity validation failed'};
                 }
@@ -203,7 +219,7 @@ async function pollStatus(self,endpoint,data) {
                 var result = {
                     status: 'completed', 
                     user: {
-                        id: userInfo.ssn,
+                        id: userInfo,
                         firstname: '',
                         lastname: '',
                         fullname: ''
