@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "await-to-js": "^2.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.2",
     "soap": "^0.35.0",
