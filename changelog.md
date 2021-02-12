@@ -4,8 +4,14 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
+- Nothing
+
+## [0.2.0] (2021-02-12)
+
+### Fixed
 - Documentation updates
 - Added security policy
+- Bumped axios
 
 ## [0.1.9] (2020-12-08)
 
