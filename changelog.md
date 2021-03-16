@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing
+- Fixed fatal bug in code for signing (frejaeid)
 
 ## [0.2.0] (2021-02-12)
 

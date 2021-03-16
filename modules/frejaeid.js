@@ -90,7 +90,7 @@ async function initAuthRequest(ssn) {
 // Lets structure a call for a sign request and return the worker
 async function initSignRequest(ssn,text) {
     var infoType = unPack(this.settings.id_type,this.settings.default_country,ssn);
-    var [error, result]  = await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
+    return await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
         attributesToReturn: this.settings.attribute_list.split(","),
         minRegistrationLevel: this.settings.minimumLevel,
         userInfoType: infoType.userInfoType,
