@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ## [Unreleased]
 - Fixed fatal bug in code for signing (frejaeid)
+- Implemented phone_numbers collection from authentication (frejaeid,frejaorgid)
 
 ## [0.2.0] (2021-02-12)
 

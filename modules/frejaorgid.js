@@ -258,6 +258,7 @@ async function pollStatus(self,endpoint,data) {
                     if (decoded.requestedAttributes.dateOfBirth) result.extra.date_of_birth = decoded.requestedAttributes.dateOfBirth;
                     if (decoded.requestedAttributes.emailAddress) result.extra.primary_email = decoded.requestedAttributes.emailAddress;
                     if (decoded.requestedAttributes.allEmailAddresses) result.extra.email_addresses = decoded.requestedAttributes.allEmailAddresses;
+                    if (decoded.requestedAttributes.allPhoneNumbers) result.extra.phone_numbers = decoded.requestedAttributes.allPhoneNumbers;
                     if (decoded.requestedAttributes.addresses) result.extra.addresses = decoded.requestedAttributes.addresses;
 
                     if (decoded.requestedAttributes.basicUserInfo) {
