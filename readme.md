@@ -1,12 +1,12 @@
-![NPM version](https://img.shields.io/npm/v/eid-provider.svg?style=flat)
-![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)
-![version](https://img.shields.io/badge/version-0.2.1-green.svg)
+![NPM version](https://img.shields.io/npm/v/eid.svg?style=flat)
+![stability-stable](https://img.shields.io/badge/stability-beta-green.svg)
+![version](https://img.shields.io/badge/version-1.0.0-yellow.svg)
 ![maintained](https://img.shields.io/maintenance/yes/2021.svg)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid-provider)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
-# eid-provider
-This module is developed to enable rapid deployment of identity based authentication for Node.js by creating a common interface to most of the suppliers for official electronic identification and it allows you to mix and match your suppliers. This is a reusability code port of code that I have contributed to [teams-app-eid](https://github.com/DennizSvens/teams-app-eid) with some smart addons and international support.
+# eid
+This is version 1.0.0-beta.0. It is NOT intended for production usage. See eid-provider instead for production usage. This module is developed to enable rapid deployment of identity based authentication for Node.js by creating a common interface to most of the suppliers for official electronic identification and it allows you to mix and match your suppliers. This is a reusability code port of code that I have contributed to [teams-app-eid](https://github.com/DennizSvens/teams-app-eid) with some smart addons and international support.
 
 ### Simple to use
 

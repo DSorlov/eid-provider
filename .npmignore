@@ -1,0 +1,5 @@
+.vscode
+.gitignore
+test.js
+node_modules
+docs
