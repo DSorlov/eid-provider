@@ -3,9 +3,13 @@
 Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 
 ### Client Information
+
 **Version**: 20210406
+
 **Author**: Daniel Sörlöv <daniel@sorlov.com>
+
 **Status**: Built-in
+
 **Url**: https://github.com/DSorlov/eid/clients/frejaeid
 
 | Feature | Supported |
