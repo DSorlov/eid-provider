@@ -1,6 +1,6 @@
 ![NPM version](https://img.shields.io/npm/v/eid.svg?style=flat)
-![stability-stable](https://img.shields.io/badge/stability-beta-green.svg)
-![version](https://img.shields.io/badge/version-1.0.0-beta.1-yellow.svg)
+![stability-stable](https://img.shields.io/badge/stability-beta-red.svg)
+![version](https://img.shields.io/badge/version-1.0.0-red.svg)
 ![maintained](https://img.shields.io/maintenance/yes/2021.svg)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
