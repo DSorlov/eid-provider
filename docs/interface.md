@@ -46,9 +46,10 @@ var clientList = eid.clientList();
 **Main methods**
 The main methods are the ones that are implemented in all clients. Clients with more functionallity can contain additonal methods and parameters, this is then documented in the client documentation for each client if so. However this is the basic spec that is guaranteed to be common between all clients. All main methods only accepts objects as arguments.
 
-* `initRequest({id,method,[text]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign' * `doRequest({id,method,[text],[statusCallback],[initCallback]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign'. Will return when the call is completed or errors out. Will call callbacks if defined to update status.
+* `doRequest({id,method,[text],[statusCallback],[initCallback]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign'. Will return when the call is completed or errors out. Will call callbacks if defined to update status.
 also must be supplied.
-* `pollRequest({id})` Gets the status of a request using id='requestid' obtained from initRequest 
+
+* `initRequest({id,method,[text]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign' * `pollRequest({id})` Gets the status of a request using id='requestid' obtained from initRequest 
 * `cancelRequest({id})` Cancels a pending request using id='requestid' obtained from initRequest 
 
 **Compability methods**
