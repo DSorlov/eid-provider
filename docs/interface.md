@@ -26,6 +26,11 @@ var client = eid.clientFactory(config);
 
 The Client Indexer returns a array of objects describing clients that are installed and usefull metadata about the client.
 
+```javascript
+const eid = require('eid');
+var clientList = eid.clientList();
+```
+
 **Metadata Object**
 * `id` The id used for clientType specs
 * `path` The code path for the client
@@ -36,14 +41,12 @@ The Client Indexer returns a array of objects describing clients that are instal
 * `author` The client author
 * `url` A url provided by the author
 
-```javascript
-const eid = require('eid');
-var clientList = eid.clientList();
-```
+
 
 ### Client Methods
 
 **Main methods**
+
 The main methods are the ones that are implemented in all clients. Clients with more functionallity can contain additonal methods and parameters, this is then documented in the client documentation for each client if so. However this is the basic spec that is guaranteed to be common between all clients. All main methods only accepts objects as arguments.
 
 `doRequest({id,method,[text],[statusCallback],[initCallback]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign'. Will return when the call is completed or errors out. Will call callbacks if defined to update status.
@@ -56,6 +59,7 @@ also must be supplied.
 `cancelRequest({id})` Cancels a pending request using id='requestid' obtained from initRequest 
 
 **Compability methods**
+
 The compability methods are a simpler interface to be more compatible with old implementations and making transitioning to the new version much easier. The compability methods will not support special features of the different clients. The compability methods are not planned for removal but also unlocks a simpler model which are liked by many people.
 
 `initAuthRequest(id)` Alias for initRequest
