@@ -23,17 +23,12 @@ class BankID extends BaseClient {
 
     };
 
-    async pollAuthRequest(id) {
-        return await this._pollRequest(id);
-    }
+    async pollRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
 
-    async pollSignRequest(id) {
-        return await this._pollRequest(id);
-    }
-
-    async _pollRequest(id) {
         var postData = {
-            orderRef: id
+            orderRef: data.id
         };
         var result = await this._httpRequest(`${this.settings.endpoint}/collect`,{},JSON.stringify(postData));
         var resultData = result.data!=='' ? JSON.parse(result.data) : {};
@@ -93,17 +88,12 @@ class BankID extends BaseClient {
 
     }
 
-    async cancelAuthRequest(id) {
-        return await this._cancelRequest(id);
-    }
-
-    async cancelSignRequest(id) {
-        return await this._cancelRequest(id);
-    }    
-
-    async _cancelRequest(id) {
+    async cancelRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
+        
         var postData = {
-            orderRef: id
+            orderRef: data.id
         };
         var result = await this._httpRequest(`${this.settings.endpoint}/cancel`,{},JSON.stringify(postData));
 
@@ -117,32 +107,32 @@ class BankID extends BaseClient {
 
     }
 
-    async initAuthRequest(id,remoteip='127.0.0.1') {
-        var ssn = this._unPack(id);
-        var postData = {
-            endUserIp: remoteip,
-            personalNumber: ssn,
-            requirement: {
-                allowFingerprint: this.settings.allowFingerprint
-        }};
-        return await this._initRequest('auth', postData);        
-    }
+    async initRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
+        var postData = '';
+        var endpointUri = '';
 
-    async initSignRequest(id,text,remoteip='127.0.0.1') {
-        var ssn = this._unPack(id);
-        var postData = {
-            endUserIp: remoteip,
-            personalNumber: ssn,
-            userVisibleData: Buffer.from(text).toString('base64'),
-            requirement: {
-                allowFingerprint: this.settings.allowFingerprint
-        }};
-        return await this._initRequest('sign', postData);
-    }
-    
-    async _initRequest(method,postData) {
+        if (data.text) {
+            endpointUri = 'sign';
+            postData = {
+                endUserIp: data.endUserIp ? data.endUserUp : '127.0.0.1',
+                personalNumber: this._unPack(data.id),
+                userVisibleData: Buffer.from(data.text).toString('base64'),
+                requirement: {
+                    allowFingerprint: this.settings.allowFingerprint
+            }};
+        } else {
+            endpointUri = 'auth';
+            postData = {
+                endUserIp: data.endUserIp ? data.endUserUp : '127.0.0.1',
+                personalNumber: this._unPack(data.id),
+                requirement: {
+                    allowFingerprint: this.settings.allowFingerprint
+            }};
+        }
 
-        var result = await this._httpRequest(`${this.settings.endpoint}/${method}`,{},JSON.stringify(postData));
+        var result = await this._httpRequest(`${this.settings.endpoint}/${endpointUri}`,{},JSON.stringify(postData));
         var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
@@ -152,7 +142,6 @@ class BankID extends BaseClient {
         } else if (result.statusCode===200) {
 
             return this._createInitializationMessage(resultData.orderRef, {
-                method: method,
                 autostart_token: resultData.autoStartToken,
                 autostart_url: "bankid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null"
             });

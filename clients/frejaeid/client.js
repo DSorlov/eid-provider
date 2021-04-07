@@ -23,23 +23,28 @@ class FrejaEID extends BaseClient {
 
     };
 
-    async pollAuthRequest(id) {
-        var postData = "getOneAuthResultRequest="+Buffer.from(JSON.stringify({
-            authRef: id
-        })).toString('base64');
-        return this._pollRequest('authentication/1.0/getOneResult', postData);
-    }
+    async pollRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
 
-    async pollSignRequest(id) {
-        var postData = "getOneSignResultRequest="+Buffer.from(JSON.stringify({
-            signRef: id
-        })).toString('base64');
-        return this._pollRequest('sign/1.0/getOneResult', postData);
-    }
+        var requestType = data.id.charAt(0);
+        var requestId = data.id.substring(1);
+        var requestUri = '';
+        var requestData = '';
 
-    async _pollRequest(uri,postData) {
+        if (requestType==="A") {
+            requestData = "getOneAuthResultRequest="+Buffer.from(JSON.stringify({
+                authRef: requestId
+            })).toString('base64');
+            requestUri = 'authentication/1.0/getOneResult';
+        } else {
+            requestData = "getOneSignResultRequest="+Buffer.from(JSON.stringify({
+                signRef: requestId
+            })).toString('base64');
+            requestUri = 'sign/1.0/getOneResult';
+        }
 
-        var result = await this._httpRequest(`${this.settings.endpoint}/${uri}`,{},postData);
+        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},requestData);
         var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
@@ -108,9 +113,10 @@ class FrejaEID extends BaseClient {
                         if (decoded.requestedAttributes.dateOfBirth) extras.date_of_birth = decoded.requestedAttributes.dateOfBirth;
                         if (decoded.requestedAttributes.emailAddress) extras.primary_email = decoded.requestedAttributes.emailAddress;
                         if (decoded.requestedAttributes.allEmailAddresses) extras.email_addresses = decoded.requestedAttributes.allEmailAddresses;
+                        if (decoded.requestedAttributes.allPhoneNumbers) extras.phone_numbers = decoded.requestedAttributes.allPhoneNumbers;
                         if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
                         if (decoded.requestedAttributes.customIdentifier) extras.custom_identifier = decoded.requestedAttributes.customIdentifier;
-
+                        
                         if (decoded.requestedAttributes.ssn) {
                             extras.ssn_number = decoded.requestedAttributes.ssn.ssn;
                             extras.ssn_country = decoded.requestedAttributes.ssn.country;
@@ -132,24 +138,30 @@ class FrejaEID extends BaseClient {
 
         } else {
 
-            reject(this._createErrorMessage('communication_error',result.statusMessage));
+            return this._createErrorMessage('communication_error',result.statusMessage);
 
         }
     }
 
-    async cancelAuthRequest(id) {
-        var postData = "cancelAuthRequest="+Buffer.from(JSON.stringify({
-            authRef: id
-        })).toString('base64');
-        return await this._simpleRequest('authentication/1.0/cancel', postData);
-    }
+    async cancelRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
 
-    async cancelSignRequest(id) {
-        var postData = "cancelSignRequest="+Buffer.from(JSON.stringify({
-            signRef: id
-        })).toString('base64');
-        return await this._simpleRequest('sign/1.0/cancel', postData);
-    }    
+        var requestType = data.id.charAt(0);
+        var requestId = data.id.substring(1);
+
+        if (requestType==="A") {
+            var postData = "cancelAuthRequest="+Buffer.from(JSON.stringify({
+                authRef: requestId
+            })).toString('base64');
+            return await this._simpleRequest('authentication/1.0/cancel', postData);
+        } else {
+            var postData = "cancelSignRequest="+Buffer.from(JSON.stringify({
+                signRef: requestId
+            })).toString('base64');
+            return await this._simpleRequest('sign/1.0/cancel', postData);
+            }        
+    }
 
     async createCustomIdentifier(id,customid) {
         var infoType = this._unPack(id);
@@ -180,35 +192,37 @@ class FrejaEID extends BaseClient {
         }
     }       
 
-    async initAuthRequest(id) {
-        var infoType = this._unPack(id);
-        var postData = "initAuthRequest="+Buffer.from(JSON.stringify({
-            attributesToReturn: this.settings.attribute_list,
-            minRegistrationLevel: this.settings.minimumLevel,
-            userInfoType: infoType.userInfoType,
-            userInfo: infoType.userInfo
-        })).toString('base64');        
-        return await this._initRequest('authentication/1.0/initAuthentication', 'auth', postData);
-    }
-
-    async initSignRequest(id,text) {
-        var infoType = this._unPack(id);
-        var postData = "initSignRequest="+Buffer.from(JSON.stringify({
-            attributesToReturn: this.settings.attribute_list,
-            minRegistrationLevel: this.settings.minimumLevel,
-            userInfoType: infoType.userInfoType,
-            userInfo: infoType.userInfo,
-            signatureType: 'SIMPLE',
-            dataToSignType: 'SIMPLE_UTF8_TEXT',
-            dataToSign: { text: Buffer.from(text).toString('base64') }
-        })).toString('base64');        
-        return await this._initRequest('sign/1.0/initSignature', 'sign', postData);
-    }  
-
     // Authentication Initialization Request
-    async _initRequest(uri,method,postData) {
+    async initRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
 
-        var result = await this._httpRequest(`${this.settings.endpoint}/${uri}`,{},postData);
+        var infoType = this._unPack(data.id);
+        var postData = '';
+        var requestUri = '';
+
+        if (data.text) {
+            requestUri = 'sign/1.0/initSignature';
+            postData = "initSignRequest="+Buffer.from(JSON.stringify({
+                attributesToReturn: this.settings.attribute_list,
+                minRegistrationLevel: this.settings.minimumLevel,
+                userInfoType: infoType.userInfoType,
+                userInfo: infoType.userInfo,
+                signatureType: 'SIMPLE',
+                dataToSignType: 'SIMPLE_UTF8_TEXT',
+                dataToSign: { text: Buffer.from(data.text).toString('base64') }
+            })).toString('base64');   
+        } else {
+            requestUri = 'authentication/1.0/initAuthentication';
+            postData = "initAuthRequest="+Buffer.from(JSON.stringify({
+                attributesToReturn: this.settings.attribute_list,
+                minRegistrationLevel: this.settings.minimumLevel,
+                userInfoType: infoType.userInfoType,
+                userInfo: infoType.userInfo
+            })).toString('base64');   
+        }
+        
+        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},postData);
         var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
@@ -217,9 +231,8 @@ class FrejaEID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            var token = method==='auth' ? resultData.authRef : resultData.authRef;
+            var token = data.text ? `S${resultData.authRef}` : `A${resultData.authRef}`;
             return this._createInitializationMessage(token, {
-                method: method,
                 autostart_token: token,
                 autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(resultData.signRef)
             });

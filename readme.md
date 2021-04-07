@@ -1,46 +1,51 @@
 ![NPM version](https://img.shields.io/npm/v/eid.svg?style=flat)
 ![stability-stable](https://img.shields.io/badge/stability-beta-green.svg)
-![version](https://img.shields.io/badge/version-1.0.0-yellow.svg)
+![version](https://img.shields.io/badge/version-1.0.0-beta.1-yellow.svg)
 ![maintained](https://img.shields.io/maintenance/yes/2021.svg)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
+| :warning: | This is version 1.0.0-beta.1 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
+| --- | --- |
+
 # eid
-This is version 1.0.0-beta.0. It is NOT intended for production usage. See eid-provider instead for production usage. This module is developed to enable rapid deployment of identity based authentication for Node.js by creating a common interface to most of the suppliers for official electronic identification and it allows you to mix and match your suppliers. This is a reusability code port of code that I have contributed to [teams-app-eid](https://github.com/DennizSvens/teams-app-eid) with some smart addons and international support.
+This module is developed to enable rapid deployment of identity based authentication for Node.js by creating a common interface to most of the suppliers for official electronic identification and it allows you to mix and match your suppliers. This is a reusability code port of code that I have contributed to [teams-app-eid](https://github.com/DennizSvens/teams-app-eid) with some smart addons and international support.
 
 ### Simple to use
 
-There is only one way of sending data into and out of the modules. Uniformity regardless of service. You can read details of the [methods](docs/methods.md) or see some [more examples](docs/examples.md)
+Regardless of which backend service you use the basic usage is the same. Some backends require more configuration than others. However the classes expose same interface and responses so code is easy to use. You can read details of the [interface](docs/interface.md) or see some [more practical examples](docs/examples.md)
 
 ```javascript
-const  eidprovider = require('./eid-provider.js')('frejaeid');  
-const  config = eidprovider.settings.testing;
-eidprovider.initialize(config);
+const eid = require('./eid');
 
-eidprovider.authRequest('200101011212').then(function(result){
-	console.log(result);
+var config = eid.configFactory({clientType: 'frejaeid', enviroment: 'testing'});
+var client = eid.clientFactory(config);
+
+client.doRequest({id: '200101011212'}).then(function(endResult){
+    console.log(endResult)
 });
 ```
 
-### Supported modules
+or the more backwards compatible
 
-There are basically right now two main types of integrations: one is working directly with the service apis and the other kind is working with a broker service. The broker services can be usefull if you have many integrations or other sources in your enterprise and you wish to use the same sources for these.
+```javascript
+const eid = require('./eid');
 
-| ID-Type | Module | Vendor | Authentication | Signing | Geographies | Readiness |
-| --- | --- | --- | --- | --- | --- | --- |
-| BankID | [bankid](docs/bankid.md) | BankID | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
-| Freja eID | [frejaeid](docs/frejaeid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
-| Freja eID Org ID | [frejaorgid](docs/frejaorgid.md) | Verisec (Freja eID) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
-| Mobilt BankID | [ftbankid](docs/ftbankid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
-| Freja eID | [ftfrejaeid](docs/ftfrejaeid.md) | Funktionstjänster (CGI) | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: | Production |
-| Mobilt BankID | [gbankid](docs/gbankid.md) | Svensk e-Identitet | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
-| Freja eID | [gfrejaeid](docs/gfrejaeid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Stable* |
-| SITHS Mobile | [ghsaid](docs/ghsaid.md) | Svensk e-Identitet | :heavy_check_mark:| :heavy_check_mark: | :sweden: | Production |
-| Mobilt BankID | [gbankid](docs/idkbankid.md) | IDKollen | :heavy_check_mark: | :heavy_check_mark: | :sweden: | Production |
+var config = eid.configFactory({clientType: 'frejaeid', enviroment: 'testing'});
+var client = eid.clientFactory(config);
 
-<sup>* GrandID do not officially support Freja eID for silent logins. Using some ugly workarounds tbh. Evaluate before production!
-</sup>
+client.authRequest('200101011212').then(function(endResult) {
+    console.log(endResult)
+});
+```
+
+### Built-in clients
+
+Clients are the classes that manage communication with the backend services. The library supports a bunch of clients out of the box, but additional clients can easily be added to make sure that the one interface strategy works.
+
+| Client | ID Types | Vendor | Authentication | Signing | Markets |
+| --- | --- | --- | --- | --- | --- |
+| [FrejaEID](clients/frejaeid/readme.md) | Freja eID | Freja eID AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
+| [FrejaEID](clients/bankid/readme.md) | BankID | Finansiell ID-Teknik AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: |
 
 The configuration options should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.
-
-

@@ -11,6 +11,66 @@ class BaseClient {
         this.httpsAgent = false;
     }
 
+    // A number of compability methods to support old style
+    async pollAuthRequest(id) {
+        return await this.pollRequest({id: id});
+    }
+    async pollSignRequest(id) {
+        return await this.pollRequest({id: id});
+    }
+    async cancelAuthRequest(id) {
+        return await this.cancelRequest({id: id});
+    }
+    async cancelSignRequest(id) {
+        return await this.cancelSignRequest({id: id});
+    }
+    async initAuthRequest(id) {
+        return await this.initRequest({id: id});
+    }
+    async initSignRequest(id,text) {
+        return await this.initRequest({id: id, text: text});
+    }
+    async authRequest(id, initCallback=undefined, statusCallback=undefined) {
+        var doArgs = {
+            id: id
+        }
+        if (initCallback) doArgs.initCallback = initCallback;
+        if (statusCallback) doArgs.statusCallback = statusCallback;
+        return await this.doRequest(doArgs);
+    }
+    async signRequest(id, text, initCallback=undefined, statusCallback=undefined) {
+        var doArgs = {
+            id: id,
+            text: text
+        }
+        if (initCallback) doArgs.initCallback = initCallback;
+        if (statusCallback) doArgs.statusCallback = statusCallback;
+        return await this.doRequest(doArgs);
+    }
+
+    // Tracks a request
+    async doRequest(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+
+        var initResponse = undefined;
+        if (data.text) {
+            initResponse = await this.initRequest(data);
+        } else {
+            initResponse = await this.initRequest(data);
+        }
+
+        if (initResponse.status==='error') { return initResponse; }
+        if (data.initCallback) { data.initCallback(initResponse); }
+
+        while(true) {
+            var pollResponse = await this.pollRequest({id: initResponse.id});
+            if (pollResponse.status==="completed"||pollResponse.status==="error") return pollResponse;
+            if (data.statusCallback) data.statusCallback(pollResponse);
+
+            await new Promise(resolve => setTimeout(resolve,2000));
+        }
+    }
+
     //Used to customise if needed the http-agent
     _customAgent(options) {
         this.httpsAgent = new https.Agent(options);
@@ -92,30 +152,6 @@ class BaseClient {
             extra: extras || {}
         };
     }    
-
-    async authRequest(id, initCallback=undefined, statusCallback=undefined) {
-        var initResponse = await this.initAuthRequest(id);
-        return await this._followRequest(initResponse,initCallback,statusCallback);
-    }
-
-    async signRequest(id, text, initCallback=undefined, statusCallback=undefined) {
-        var initResponse = await this.initSignRequest(id,text);
-        return await this._followRequest(initResponse,initCallback,statusCallback);
-    }
-
-    async _followRequest(initRequest,initCallback,statusCallback) {
-
-        if (initRequest.status==='error') { return initRequest; }
-        if (initCallback) { initCallback(initRequest); }
-
-        while(true) {
-            var pollResponse = initRequest.extra.method==='auth' ? await this.pollAuthRequest(initRequest.id) : await this.pollSignRequest(initRequest.id);
-            if (pollResponse.status==="completed"||pollResponse.status==="error") return pollResponse;
-            if (statusCallback) statusCallback(pollResponse);
-
-            await new Promise(resolve => setTimeout(resolve,2000));
-        }
-    }
 
     //Simple httpRequest function supporting get and post
     async _httpRequest(url,options={},data=undefined) {
