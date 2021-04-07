@@ -3,9 +3,13 @@
 Client for direct API communication with Freja eID REST API (Freja eID AB).
 
 ### Client Information
+
 **Version**: 20210406
+
 **Author**: Daniel Sörlöv <daniel@sorlov.com>
+
 **Status**: Built-in
+
 **Url**: https://github.com/DSorlov/eid/clients/frejaeid
 
 | Feature | Supported |
@@ -26,7 +30,8 @@ var config = eid.configFactory({
 
 ### Configuration Object
 
-Use the Configuration Factory to get a pre-populated object
+Use the Configuration Factory to get a pre-populated object.
+See [Freja eID developer docs](https://frejaeid.com/rest-api/Freja%20eID%20Relying%20Party%20Developers'%20Documentation)
 
 ```javascript
 var config = {
@@ -45,13 +50,13 @@ var config = {
         '2LQIrINOzwWAVDhoYybqUcXXmVs': '...',
         'HwMHK_gb3_iuNF1advMtlG0-fUs': '...'
     },
-    // The minimum level to accept [authentication](https://frejaeid.com/rest-api/Freja%20eID%20Relying%20Party%20Developers'%20Documentation.html)
+    // The minimum level to accept
     minimumLevel: 'EXTENDED',
     // Default country when calling identification with just an SSN
     default_country: 'SE',
-    // The [UserInfo](https://frejaeid.com/rest-api/Authentication%20Service.html) field
+    // The UserInfo field
     id_type: 'SSN',
-    // [Attributes]((https://frejaeid.com/rest-api/Authentication%20Service.html) to retrieve 
+    // Attributes to retrieve 
     attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES']    
 };
 ```
