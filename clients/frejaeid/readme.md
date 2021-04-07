@@ -4,13 +4,10 @@ Client for direct API communication with Freja eID REST API (Freja eID AB).
 
 ### Client Information
 
-**Version**: 20210406
-
-**Author**: Daniel Sörlöv <daniel@sorlov.com>
-
-**Status**: Built-in
-
-**Url**: https://github.com/DSorlov/eid/clients/frejaeid
+| Version | 20210406 |
+| Author | Daniel Sörlöv <daniel@sorlov.com> |
+| Status | Built-in |
+| Info URL | https://github.com/DSorlov/eid/clients/frejaeid |
 
 | Feature | Supported |
 | --- | --- |
