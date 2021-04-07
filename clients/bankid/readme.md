@@ -4,7 +4,7 @@ Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 
 
 
-| Version | 20210406 |
+| Information |   |
 | --- | --- |
 | Version | 20210406 |
 | Status | Built-in |
