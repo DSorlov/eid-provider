@@ -2,7 +2,7 @@
 
 Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 
-### Client Information
+
 
 | Information |   |
 | --- | --- |
@@ -10,6 +10,8 @@ Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 | Status | Built-in |
 | Author | Daniel Sörlöv <daniel@sorlov.com> |
 | Client URL | https://github.com/DSorlov/eid/clients/bankid |
+
+### Feature Table
 
 | Feature | Supported |
 | --- | --- |
