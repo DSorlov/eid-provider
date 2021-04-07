@@ -49,7 +49,10 @@ The main methods are the ones that are implemented in all clients. Clients with 
 * `doRequest({id,method,[text],[statusCallback],[initCallback]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign'. Will return when the call is completed or errors out. Will call callbacks if defined to update status.
 also must be supplied.
 
-* `initRequest({id,method,[text]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign' * `pollRequest({id})` Gets the status of a request using id='requestid' obtained from initRequest 
+* `initRequest({id,method,[text]})` Starts a request using id='identity' and method='auth' or 'sign'. If method='sign' then text='text to sign' 
+
+* `pollRequest({id})` Gets the status of a request using id='requestid' obtained from initRequest 
+
 * `cancelRequest({id})` Cancels a pending request using id='requestid' obtained from initRequest 
 
 **Compability methods**
