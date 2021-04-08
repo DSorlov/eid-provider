@@ -1,6 +1,6 @@
 {
   "name": "eid",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Module for simple integration to electronic identities",
   "bundleDependencies": false,
   "deprecated": false,
@@ -8,6 +8,7 @@
   "author": "Daniel Sörlöv",
   "license": "MIT",
   "dependencies": {
+    "easy-soap-request": "^4.1.3",
     "jsonwebtoken": "^8.5.1"
   },
   "repository": {

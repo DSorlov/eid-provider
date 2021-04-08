@@ -5,7 +5,7 @@
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
-| :warning: | This is version 1.0.0-beta.1 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
+| :warning: | This is version 1.0.0-beta.2 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
 | --- | --- |
 
 # eid
@@ -47,5 +47,7 @@ Clients are the classes that manage communication with the backend services. The
 | --- | --- | --- | --- | --- | --- |
 | [FrejaEID](clients/frejaeid/readme.md) | Freja eID | Freja eID AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
 | [BankID](clients/bankid/readme.md) | BankID | Finansiell ID-Teknik AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: |
+| [GRP2](clients/grp2/readme.md) | Freja eID, BankID | Funktionstjänster/CGI | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
+
 
 The configuration options should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.

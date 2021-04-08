@@ -9,7 +9,7 @@ class FrejaEID extends BaseClient {
 
         this.clientInfo = {        
             name: "FrejaEID",
-            version: "20210406",
+            version: "20210408",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid",
             methods: ['auth','sign']

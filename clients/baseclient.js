@@ -9,6 +9,7 @@ class BaseClient {
         this.clientType = "BaseClient";
         this.clientID = crypto.randomBytes(16).toString("hex");
         this.httpsAgent = false;
+        this.retryDelay = 2000;
     }
 
     // A number of compability methods to support old style
@@ -52,13 +53,7 @@ class BaseClient {
     async doRequest(data) {
         if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
 
-        var initResponse = undefined;
-        if (data.text) {
-            initResponse = await this.initRequest(data);
-        } else {
-            initResponse = await this.initRequest(data);
-        }
-
+        var initResponse = await this.initRequest(data);
         if (initResponse.status==='error') { return initResponse; }
         if (data.initCallback) { data.initCallback(initResponse); }
 
@@ -67,7 +62,7 @@ class BaseClient {
             if (pollResponse.status==="completed"||pollResponse.status==="error") return pollResponse;
             if (data.statusCallback) data.statusCallback(pollResponse);
 
-            await new Promise(resolve => setTimeout(resolve,2000));
+            await new Promise(resolve => setTimeout(resolve,this.retryDelay));
         }
     }
 
@@ -154,7 +149,7 @@ class BaseClient {
     }    
 
     //Simple httpRequest function supporting get and post
-    async _httpRequest(url,options={},data=undefined) {
+    async _httpRequest(url,customoptions={},data=undefined) {
         return new Promise((resolve) => {
 
             //Create request options, automatically determine if get or post
@@ -163,10 +158,10 @@ class BaseClient {
                 agent: this.httpsAgent,
                 method: data ? "POST": "GET",
                 headers: {
-                    'User-Agent': `eid/${pjson.version} (${this.clientInfo.name}/${this.clientInfo.version})`,
                     'Content-Type': 'application/json'
                 }
-            }, options);
+            }, customoptions);
+            options.headers['User-Agent'] = `eid/${pjson.version} (${this.clientInfo.name}/${this.clientInfo.version})`;
 
             //if we are doing a post also let them know the size of our data
             if (data) options.headers['Content-Length']= data.length;

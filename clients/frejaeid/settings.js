@@ -9,10 +9,10 @@ module.exports = function(options) {
             endpoint: 'https://services.prod.frejaeid.com',
             client_cert: '',
             password: '',
-            ca_cert: fs.readFileSync(path.join(__dirname,'prod.ca')),
+            ca_cert: fs.readFileSync(path.join(__dirname,'/cert','prod.ca')),
             jwt_cert: {
-                'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(path.join(__dirname,'prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt')),
-                'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(path.join(__dirname,'prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt'))
+                'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(path.join(__dirname,'/cert','prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt')),
+                'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(path.join(__dirname,'/cert','prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt'))
             },
             minimumLevel: 'EXTENDED',
             default_country: 'SE',
@@ -24,11 +24,11 @@ module.exports = function(options) {
     return {
         clientType: 'frejaeid',
         endpoint: 'https://services.test.frejaeid.com',
-        client_cert: fs.readFileSync(path.join(__dirname,'test.pfx')),
-        ca_cert: fs.readFileSync(path.join(__dirname,'test.ca')),
+        client_cert: fs.readFileSync(path.join(__dirname,'/cert','test.pfx')),
+        ca_cert: fs.readFileSync(path.join(__dirname,'/cert','test.ca')),
         jwt_cert: {
-            '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(path.join(__dirname,'test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt')),
-            'HwMHK_gb3_iuNF1advMtlG0-fUs': fs.readFileSync(path.join(__dirname,'test_HwMHK_gb3_iuNF1advMtlG0-fUs.jwt'))
+            '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(path.join(__dirname,'/cert','test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt')),
+            'HwMHK_gb3_iuNF1advMtlG0-fUs': fs.readFileSync(path.join(__dirname,'/cert','test_HwMHK_gb3_iuNF1advMtlG0-fUs.jwt'))
         },
         minimumLevel: 'EXTENDED',
         password: 'test',
