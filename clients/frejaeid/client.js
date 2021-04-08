@@ -23,6 +23,27 @@ class FrejaEID extends BaseClient {
 
     };
 
+    async initSignRequest(id, title, attribute, value) {
+        return await this.initRequest({id: id, orgid: { title: title, name: attribute, value: value }});
+    }
+
+    async addOrgIdRequest(id, title, attribute, value, initCallback=undefined, statusCallback=undefined) {
+        var doArgs = {
+            id: id,
+            orgid: {
+                title: title,
+                name: attribute,
+                value: value
+            }
+        }
+        if (initCallback) doArgs.initCallback = initCallback;
+        if (statusCallback) doArgs.statusCallback = statusCallback;
+        return await this.doRequest(doArgs);
+    }
+    async cancelAddOrgIdRequest(id)  {
+        return await this.cancelRequest({id: id});
+    }
+
     async pollRequest(data) {
         if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
         if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
@@ -37,12 +58,19 @@ class FrejaEID extends BaseClient {
                 authRef: requestId
             })).toString('base64');
             requestUri = 'authentication/1.0/getOneResult';
-        } else {
+        } else if (requestType==="S") {
             requestData = "getOneSignResultRequest="+Buffer.from(JSON.stringify({
                 signRef: requestId
             })).toString('base64');
             requestUri = 'sign/1.0/getOneResult';
-        }
+        } else if (requestType==="O") {
+            requestData = "getOneOrganisationIdResultRequest="+Buffer.from(JSON.stringify({
+                orgIdRef: requestId
+            })).toString('base64');
+            requestUri = 'organisation/management/orgId/1.0/getOneResult';
+        } else {
+            this._createErrorMessage('request_id_invalid');
+        }    
 
         var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},requestData);
         var resultData = result.data!=='' ? JSON.parse(result.data) : {};
@@ -55,6 +83,10 @@ class FrejaEID extends BaseClient {
 
             if (resultData.code) {
                 switch(resultData.code) {
+                    case 1004:
+                        return this._createErrorMessage('api_error', 'Access to the service is denied.');
+                    case 1008:
+                        return this._createErrorMessage('api_error', 'Unknown relying party');
                     case 1100:
                         return this._createErrorMessage('request_id_invalid');
                     default:
@@ -155,12 +187,19 @@ class FrejaEID extends BaseClient {
                 authRef: requestId
             })).toString('base64');
             return await this._simpleRequest('authentication/1.0/cancel', postData);
-        } else {
+        } else if (requestType==="S") {
             var postData = "cancelSignRequest="+Buffer.from(JSON.stringify({
                 signRef: requestId
             })).toString('base64');
             return await this._simpleRequest('sign/1.0/cancel', postData);
-            }        
+        } else if (requestType==="O") {
+            var postData = "cancelSignRequest="+Buffer.from(JSON.stringify({
+                orgIdRef: requestId
+            })).toString('base64');
+            return await this._simpleRequest('organisation/management/orgId/1.0/cancelAdd', postData);            
+        } else {
+            this._createErrorMessage('request_id_invalid');
+        }       
     }
 
     async createCustomIdentifier(id,customid) {
@@ -178,7 +217,14 @@ class FrejaEID extends BaseClient {
             customIdentifier: customid
           })).toString('base64');
         return await this._simpleRequest('user/manage/1.0/deleteCustomIdentifier', postData);
-    }      
+    }
+
+    async deleteCustomIdentifier(customid) {
+        var postData = "deleteCustomIdentifierRequest="+Buffer.from(JSON.stringify({
+            customIdentifier: customid
+          })).toString('base64');
+        return await this._simpleRequest('user/manage/1.0/deleteCustomIdentifier', postData);
+    }
 
     async _simpleRequest(uri,data) {
         var result = await this._httpRequest(`${this.settings.endpoint}/${uri}`,{},postData);
@@ -190,7 +236,51 @@ class FrejaEID extends BaseClient {
         } else {
             return this._createErrorMessage('communication_error',result.statusMessage);
         }
-    }       
+    }  
+    
+    async getOrgIdList() {    
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{},'{}');
+
+        if (result.statusCode===599) {
+            return this._createErrorMessage('internal_error',result.statusMessage);
+        } else if (result.statusCode===200) {
+            var resultData = JSON.parse(result.data);
+            return this._createSuccessMessage(resultData.userInfos);
+        } else {
+            return this._createErrorMessage('communication_error',result.statusMessage);
+        }
+    }
+
+    async deleteOrgIdRequest(id) {
+        var postData = "deleteOrganisationIdRequest="+Buffer.from(JSON.stringify({
+            identifier: id
+          })).toString('base64');    
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/delete`,{},postData);
+    
+        if (result.statusCode===599) {
+            return this._createErrorMessage('internal_error',result.statusMessage);
+        } else if (result.statusCode===200) {
+            var resultData = JSON.parse(result.data);
+
+            if (result.data.code)
+            {
+                switch(result.data.code) {
+                    case 1008:
+                    case 1004:
+                        return this._createErrorMessage('api_error','Access denied');
+                    case 4000:
+                    case 4001:
+                        return this._createErrorMessage('request_id_invalid');
+                    default:
+                        return this._createErrorMessage('api_error', `Unknwon error ${resultData.code} was received`);
+                }
+            } else {
+                return this._createSuccessMessage();
+            }            
+        } else {
+            return this._createErrorMessage('communication_error',result.statusMessage);
+        }
+    }    
 
     // Authentication Initialization Request
     async initRequest(data) {
@@ -200,8 +290,23 @@ class FrejaEID extends BaseClient {
         var infoType = this._unPack(data.id);
         var postData = '';
         var requestUri = '';
+        var requstType = '';
 
-        if (data.text) {
+        if (data.orgid) {
+            if (typeof data.orgid !== 'object') return this._createErrorMessage('internal_error','Supplied orgid argument is not a class');
+            if (!data.orgid.title||!data.orgid.name||!data.orgid.value) return this._createErrorMessage('internal_error','Orgid must contain title,name and value as string')
+            requestUri = 'organisation/management/orgId/1.0/initAdd';
+            postData = "initAddOrganisationIdRequest="+Buffer.from(JSON.stringify({
+                userInfoType: infoType.userInfoType,
+                userInfo: infoType.userInfo,    
+                organisationId: {
+                    title: data.orgid.title,
+                    identifierName: data.orgid.name,
+                    identifier: data.orgid.value
+                },
+            })).toString('base64');  
+            requstType = "O"; 
+        } else if (data.text) {
             requestUri = 'sign/1.0/initSignature';
             postData = "initSignRequest="+Buffer.from(JSON.stringify({
                 attributesToReturn: this.settings.attribute_list,
@@ -212,6 +317,7 @@ class FrejaEID extends BaseClient {
                 dataToSignType: 'SIMPLE_UTF8_TEXT',
                 dataToSign: { text: Buffer.from(data.text).toString('base64') }
             })).toString('base64');   
+            requstType = "S"; 
         } else {
             requestUri = 'authentication/1.0/initAuthentication';
             postData = "initAuthRequest="+Buffer.from(JSON.stringify({
@@ -220,6 +326,7 @@ class FrejaEID extends BaseClient {
                 userInfoType: infoType.userInfoType,
                 userInfo: infoType.userInfo
             })).toString('base64');   
+            requstType = "A"; 
         }
         
         var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},postData);
@@ -231,7 +338,7 @@ class FrejaEID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            var token = data.text ? `S${resultData.authRef}` : `A${resultData.authRef}`;
+            var token = `${requstType}${resultData.authRef||resultData.signRef||resultData.orgIdRef}`;
             return this._createInitializationMessage(token, {
                 autostart_token: token,
                 autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(resultData.signRef)
@@ -272,15 +379,17 @@ class FrejaEID extends BaseClient {
                 userInfo: this.settings.id_type==='SSN' ? Buffer.from(JSON.stringify({country: this.settings.default_country,ssn: data})).toString('base64') : data
             }            
         } else {
-            var value = data.toString();
-            var country = this.settings.default_country;
-            if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE' || data.type === 'INFERRED') this.settings.id_type = data.type;
-            if (data.country === 'SE' || data.country === 'FI' || data.country === 'DK' || data.country === 'NO') country = data.country;
-            if (data[this.settings.id_type.toLowerCase()]) value = data[this.settings.id_type.toLowerCase()];
+            var infoValue = data.toString();
+            var infoCountry = this.settings.default_country;
+            var infoType = this.settings.id_type;
+
+            if (data.type === 'EMAIL' || data.type === 'SSN' || data.type === 'PHONE' || data.type === 'INFERRED') infoType = data.type;
+            if (data.country === 'SE' || data.country === 'FI' || data.country === 'DK' || data.country === 'NO') infoCountry = data.country;
+            if (data[infoType.toLowerCase()]) infoValue = data[infoType.toLowerCase()];
     
             return { 
-                    userInfoType: this.settings.id_type,
-                    userInfo: this.settings.id_type==='SSN' ? Buffer.from(JSON.stringify({country: this.settings.default_country,ssn: value})).toString('base64') : value
+                    userInfoType: infoType,
+                    userInfo: infoType==='SSN' ? Buffer.from(JSON.stringify({country: infoCountry,ssn: infoValue})).toString('base64') : infoValue
             } 
         }
     }    

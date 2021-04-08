@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Major rehauling of architechture and internal file locations
 - Completely new interface for all operations
 - Compability calls implemented to make transition easier
+- frejaeid and frejaorgid have been merged into one client
 
 ## [0.2.1] (2021-04-08)
 
