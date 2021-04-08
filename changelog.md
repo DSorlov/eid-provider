@@ -10,9 +10,14 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Completely new interface for all operations
 - Compability calls implemented to make transition easier
 
-## [0.2.1] (Unreleased)
-- Fixed fatal bug in code for signing (frejaeid)
+## [0.2.1] (2021-04-08)
+
+### Added
 - Implemented phone_numbers collection from authentication (frejaeid,frejaorgid)
+
+### Fixed
+- Fixed fatal bug in code for signing (frejaeid)
+- Updated xmldom to remove security issues in the soap library
 
 ## [0.2.0] (2021-02-12)
 
