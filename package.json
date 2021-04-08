@@ -1,10 +1,10 @@
 {
   "name": "eid",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Module for simple integration to electronic identities",
   "bundleDependencies": false,
   "deprecated": false,
-  "main": "eid-provider.js",
+  "main": "index.js",
   "author": "Daniel Sörlöv",
   "license": "MIT",
   "dependencies": {
