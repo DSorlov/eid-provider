@@ -11,7 +11,7 @@ class BankID extends BaseClient {
             name: "BankID",
             version: "20210406",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
-            url: "https://github.com/DSorlov/eid",
+            url: "https://github.com/DSorlov/eid-provider/clients/bankid",
             methods: ['auth','sign']
         };
 

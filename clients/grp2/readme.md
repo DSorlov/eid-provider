@@ -10,7 +10,7 @@ The cancelRequest is just stubbed due to not beeing implemented by the supplier.
 | Version | 20210408 |
 | Status | Built-in |
 | Author | Daniel Sörlöv <daniel@sorlov.com> |
-| Client URL | https://github.com/DSorlov/eid/clients/grp2 |
+| Client URL | https://github.com/DSorlov/eid-provider/clients/grp2 |
 
 ### Feature Table
 

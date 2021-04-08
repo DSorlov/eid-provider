@@ -11,7 +11,7 @@ class FrejaEID extends BaseClient {
             name: "FrejaEID",
             version: "20210408",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
-            url: "https://github.com/DSorlov/eid",
+            url: "https://github.com/DSorlov/eid-provider/clients/frejaeid",
             methods: ['auth','sign']
         };
 

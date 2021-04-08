@@ -9,7 +9,7 @@ Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 | Version | 20210406 |
 | Status | Built-in |
 | Author | Daniel Sörlöv <daniel@sorlov.com> |
-| Client URL | https://github.com/DSorlov/eid/clients/bankid |
+| Client URL | https://github.com/DSorlov/eid-provider/clients/bankid |
 
 ### Feature Table
 
