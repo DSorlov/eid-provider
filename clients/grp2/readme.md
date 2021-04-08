@@ -29,7 +29,7 @@ Supports configuration factory, using attributes:
 ```javascript
 var config = eid.configFactory({
     clientType: 'grp2',
-    enviroment: 'testing'
+    enviroment: 'testing',
     provider: 'freja'
 });
 ```
