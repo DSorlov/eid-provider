@@ -4,7 +4,16 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Nothing
+- Nothing right now
+
+## [0.2.1] (2021-04-08)
+
+### Added
+- Implemented phone_numbers collection from authentication (frejaeid,frejaorgid)
+
+### Fixed
+- Fixed fatal bug in code for signing (frejaeid)
+- Updated xmldom to remove security issues in the soap library
 
 ## [0.2.0] (2021-02-12)
 
@@ -95,6 +104,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[0.2.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.1
 [0.2.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.0
 [0.1.9]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.9
 [0.1.8]: https://github.com/DSorlov/eid-provider/releases/tag/v0.1.8

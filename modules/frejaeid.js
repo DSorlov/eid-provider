@@ -90,7 +90,7 @@ async function initAuthRequest(ssn) {
 // Lets structure a call for a sign request and return the worker
 async function initSignRequest(ssn,text) {
     var infoType = unPack(this.settings.id_type,this.settings.default_country,ssn);
-    var [error, result]  = await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
+    return await initRequest(this,'sign/1.0/initSignature', "initSignRequest="+Buffer.from(JSON.stringify({
         attributesToReturn: this.settings.attribute_list.split(","),
         minRegistrationLevel: this.settings.minimumLevel,
         userInfoType: infoType.userInfoType,
@@ -231,6 +231,7 @@ async function pollStatus(self,endpoint,data) {
                 if (decoded.requestedAttributes.dateOfBirth) result.extra.date_of_birth = decoded.requestedAttributes.dateOfBirth;
                 if (decoded.requestedAttributes.emailAddress) result.extra.primary_email = decoded.requestedAttributes.emailAddress;
                 if (decoded.requestedAttributes.allEmailAddresses) result.extra.email_addresses = decoded.requestedAttributes.allEmailAddresses;
+                if (decoded.requestedAttributes.allPhoneNumbers) result.extra.phone_numbers = decoded.requestedAttributes.allPhoneNumbers;
                 if (decoded.requestedAttributes.addresses) result.extra.addresses = decoded.requestedAttributes.addresses;
                 if (decoded.requestedAttributes.customIdentifier) result.extra.custom_identifier = decoded.requestedAttributes.customIdentifier;
 

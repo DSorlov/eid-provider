@@ -1,6 +1,6 @@
 ![NPM version](https://img.shields.io/npm/v/eid-provider.svg?style=flat)
 ![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)
-![version](https://img.shields.io/badge/version-0.2.0-green.svg)
+![version](https://img.shields.io/badge/version-0.2.1-green.svg)
 ![maintained](https://img.shields.io/maintenance/yes/2021.svg)
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid-provider)
