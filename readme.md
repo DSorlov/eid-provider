@@ -16,7 +16,7 @@ This module is developed to enable rapid deployment of identity based authentica
 Regardless of which backend service you use the basic usage is the same. Some backends require more configuration than others. However the classes expose same interface and responses so code is easy to use. You can read details of the [interface](docs/interface.md) or see some [more practical examples](docs/examples.md)
 
 ```javascript
-const eid = require('./eid');
+const eid = require('eid');
 
 var config = eid.configFactory({clientType: 'frejaeid', enviroment: 'testing'});
 var client = eid.clientFactory(config);
@@ -29,7 +29,7 @@ client.doRequest({id: '200101011212'}).then(function(endResult){
 or the more backwards compatible
 
 ```javascript
-const eid = require('./eid');
+const eid = require('eid');
 
 var config = eid.configFactory({clientType: 'frejaeid', enviroment: 'testing'});
 var client = eid.clientFactory(config);
