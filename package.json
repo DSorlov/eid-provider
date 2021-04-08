@@ -15,7 +15,7 @@
     "axios": "^0.21.1",
     "jsonwebtoken": "^8.5.1",
     "request": "^2.88.2",
-    "soap": "^0.35.0",
+    "soap": "^0.37.0",
     "uuid": "^8.3.1"
   },
   "repository": {

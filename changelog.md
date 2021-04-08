@@ -4,8 +4,16 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
 ## [Unreleased]
-- Fixed fatal bug in code for signing (frejaeid)
+- Nothing right now
+
+## [0.2.1] (2021-04-08)
+
+### Added
 - Implemented phone_numbers collection from authentication (frejaeid,frejaorgid)
+
+### Fixed
+- Fixed fatal bug in code for signing (frejaeid)
+- Updated xmldom to remove security issues in the soap library
 
 ## [0.2.0] (2021-02-12)
 
