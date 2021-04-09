@@ -11,8 +11,8 @@ module.exports = function(options) {
             clientType: 'signicat',
             oauth_endpoint: 'https://api.signicat.io/oauth/connect/token',
             api_endpoint: 'https://api.signicat.io',
-            client_id: 't32243849e2344d76b2d84c7dc4d4b8fd',
-            client_secret: '3gykgEmEVngGUGmlo9DUCReYx0VG6EEoDr9RMkzyMIGFlvS8ekzfqN4O8LE9cXNI'
+            client_id: '',
+            client_secret: ''
         };
     }
 
@@ -21,8 +21,8 @@ module.exports = function(options) {
         clientType: 'signicat',
         oauth_endpoint: 'https://api.signicat.io/oauth/connect/token',
         api_endpoint: 'https://api.signicat.io',
-        client_id: 't32243849e2344d76b2d84c7dc4d4b8fd',
-        client_secret: '3gykgEmEVngGUGmlo9DUCReYx0VG6EEoDr9RMkzyMIGFlvS8ekzfqN4O8LE9cXNI',
+        client_id: '',
+        client_secret: '',
     };        
 
 }
