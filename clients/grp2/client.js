@@ -13,7 +13,7 @@ class GRP2 extends BaseClient {
             name: "GRP2",                      //the name of this client
             version: "20210408",                         //revision/version for this client
             author: "Daniel Sörlöv <daniel@sorlov.com>", //who is the client author
-            url: "https://github.com/DSorlov/eid-provider/clients/grp2",       //where does this client live
+            url: "https://github.com/DSorlov/eid-provider",       //where does this client live
             methods: ['auth','sign']                                  //should contain 'auth' and/or 'sign' depending on the module
         };
 

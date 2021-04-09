@@ -5,12 +5,20 @@ I'm still struggling a bit to make this really readable in a good way, so perhap
 
 ### Configuration Factory
 
-Configuration factory returns a configuration object.
+Configuration factory returns a configuration object, depending on the client it can also accept more arguments depending on the client, see client documentation for more information.
 
 ```javascript
 const eid = require('eid');
-var config = eid.configFactory({clientType: 'bankid', enviroment: 'testing'});
+var config = eid.configFactory({clientType: 'frejaeid', enviroment: 'testing'});
 ```
+
+If you know some arguments that you want to override already from start you can do so using the `set` object.
+
+```javascript
+const eid = require('eid');
+var config = eid.configFactory({clientType: 'bankid', enviroment: 'testing', set: { allowFingerprint: false } });
+```
+
 
 ### Client Factory
 

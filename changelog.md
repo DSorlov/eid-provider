@@ -1,4 +1,4 @@
-# Changelog for eid-provider
+# Changelog for eid
 
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
@@ -6,10 +6,12 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 ## [Unreleased]
 
 ### Breaking changes
+- Package name changed from eid-provider to eid
 - Major rehauling of architechture and internal file locations
 - Completely new interface for all operations
-- Compability calls implemented to make transition easier
-- frejaeid and frejaorgid have been merged into one client
+- Compability calls implemented to make transition easier to eid
+- frejaeid and frejaorgid have been merged into one client frejaeid
+- ftbankid and ftfrejaeid have been merged into new client grp2
 
 ## [0.2.1] (2021-04-08)
 

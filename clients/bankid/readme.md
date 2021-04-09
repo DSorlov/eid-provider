@@ -9,7 +9,7 @@ Client for direct API communication with BankID (Finansiell ID-Teknik AB).
 | Version | 20210406 |
 | Status | Built-in |
 | Author | Daniel Sörlöv <daniel@sorlov.com> |
-| Client URL | https://github.com/DSorlov/eid-provider/clients/bankid |
+| Client URL | https://github.com/DSorlov/eid-provider |
 
 ### Feature Table
 
@@ -35,7 +35,7 @@ Use the Configuration Factory to get a pre-populated object
 
 ```javascript
 var config = {
-    // Client type (must be frejaeid to use this client)
+    // Client type (must be bankid to use this client)
     clientType: 'bankid',
     // The base URI to call the Rest-API
     endpoint: 'https://appapi2.test.bankid.com/rp/v5',
@@ -52,4 +52,4 @@ var config = {
 
 ### Extension Methods
 
-The `doRequest` and `initRequest` accepts additional parameter `endUserIP` which can be set to the end user ip / remote requester ip. If not supplied it will be replaced by '127.0.0.1' as in earlier versions.
+The `doRequest` and `initRequest` accepts additional parameter `endUserIP` which can be set to the end user ip / remote requester ip. If not supplied it will be replaced by '127.0.0.1' as in earlier versions. Also accept `allowFingerprint` as boolean to specify if fingerprint auth is allowed in the app or not, if not specified default value from config will be used.

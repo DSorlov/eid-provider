@@ -11,7 +11,7 @@ class BankID extends BaseClient {
             name: "BankID",
             version: "20210406",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
-            url: "https://github.com/DSorlov/eid-provider/clients/bankid",
+            url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
         };
 
@@ -120,7 +120,7 @@ class BankID extends BaseClient {
                 personalNumber: this._unPack(data.id),
                 userVisibleData: Buffer.from(data.text).toString('base64'),
                 requirement: {
-                    allowFingerprint: this.settings.allowFingerprint
+                    allowFingerprint: data.allowFingerprint ? data.allowFingerprint : this.settings.allowFingerprint
             }};
         } else {
             endpointUri = 'auth';
@@ -128,7 +128,7 @@ class BankID extends BaseClient {
                 endUserIp: data.endUserIp ? data.endUserUp : '127.0.0.1',
                 personalNumber: this._unPack(data.id),
                 requirement: {
-                    allowFingerprint: this.settings.allowFingerprint
+                    allowFingerprint: data.allowFingerprint ? data.allowFingerprint : this.settings.allowFingerprint
             }};
         }
 

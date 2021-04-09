@@ -10,7 +10,7 @@ The cancelRequest is just stubbed due to not beeing implemented by the supplier.
 | Version | 20210408 |
 | Status | Built-in |
 | Author | Daniel Sörlöv <daniel@sorlov.com> |
-| Client URL | https://github.com/DSorlov/eid-provider/clients/grp2 |
+| Client URL | https://github.com/DSorlov/eid-provider |
 
 ### Feature Table
 
@@ -40,6 +40,8 @@ Use the Configuration Factory to get a pre-populated object
 
 ```javascript
 var config = {
+    // Client type to use with the config
+    clientType: 'grp2'   
     // The base URI to call the GRP2 API
     endpoint: 'https://grp.funktionstjanster.se:18898/grp/v2?wsdl',
     // The CA public cert for SSL communications

@@ -9,65 +9,65 @@ module.exports = function(options) {
     if (options&&options.enviroment&&options.enviroment==='production') {
         
         if (options.provider&&options.provider==='freja') {
-            return {
+            return Object.assign({
                 clientType: 'grp2',
                 endpoint: 'https://grp.funktionstjanster.se:18898/grp/v2',
                 ca_cert: fs.readFileSync(path.join(__dirname,'/cert','/frejaeid_prod.ca')),
                 display_name: '',
                 policy: '',
                 provider: 'freja'
-            };  
+            }, (options||options.set) ? options.set : {});  
         } else if (options.provider&&options.provider==='bankid') {
             //Return a object with all the required config for production
-            return {
+            return Object.assign({
                 clientType: 'grp2',
                 endpoint: 'https://grp.funktionstjanster.se:18898/grp/v2',
                 ca_cert: fs.readFileSync(path.join(__dirname,'/cert','/bankid_prod.ca')),
                 display_name: '',
                 policy: '',
                 provider: 'bankid'            
-            };
+            }, (options||options.set) ? options.set : {});
         } else {
-            return {
+            return Object.assign({
                 clientType: 'grp2',
                 endpoint: 'https://grp.funktionstjanster.se:18898/grp/v2',
                 ca_cert: '',
                 display_name: '',
                 policy: '',
                 provider: ''            
-            };
+            }, (options||options.set) ? options.set : {});
         }
     }
 
     //Return a object with all the required config for testing
     if (options.provider&&options.provider==='freja') {
-        return {
+        return Object.assign({
             clientType: 'grp2',
             endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2',
             ca_cert: fs.readFileSync(path.join(__dirname,'/cert','/frejaeid_test.ca')),
             display_name: 'test',
             policy: 'logtest020',
             provider: 'freja'
-        };  
+        }, (options||options.set) ? options.set : {});  
     } else if (options.provider&&options.provider==='bankid') {
         //Return a object with all the required config for production
-        return {
+        return Object.assign({
             clientType: 'grp2',
             endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2',
             ca_cert: fs.readFileSync(path.join(__dirname,'/cert','bankid_test.ca')),
             display_name: 'test',
             policy: 'logtest020',
             provider: 'bankid'
-        };
+        }, (options||options.set) ? options.set : {});
     } else {
-        return {
+        return Object.assign({
             clientType: 'grp2',
             endpoint: 'https://grpt.funktionstjanster.se:18898/grp/v2',
             ca_cert: '',
             display_name: '',
             provider: '',
             policy: ''            
-        };
+        }, (options||options.set) ? options.set : {});
     }
 
 }

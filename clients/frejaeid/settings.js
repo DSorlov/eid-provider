@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = function(options) {
 
     if (options&&options.enviroment&&options.enviroment==='production') {
-        return {
+        return Object.assign({
             clientType: 'frejaeid',
             endpoint: 'https://services.prod.frejaeid.com',
             client_cert: '',
@@ -18,10 +18,10 @@ module.exports = function(options) {
             default_country: 'SE',
             id_type: 'SSN',
             attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES']
-        };
+        }, (options||options.set) ? options.set : {});
     }
 
-    return {
+    return Object.assign({
         clientType: 'frejaeid',
         endpoint: 'https://services.test.frejaeid.com',
         client_cert: fs.readFileSync(path.join(__dirname,'/cert','test.pfx')),
@@ -35,6 +35,6 @@ module.exports = function(options) {
         default_country: 'SE',
         id_type: 'SSN',
         attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES']    
-    };            
+    }, (options||options.set) ? options.set : {});            
 
 }
