@@ -5,10 +5,10 @@
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
-| :warning: | This is version 1.0.0-beta.4 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
+| :warning: | This is version 1.0.0-beta.4 and it is NOT intended for production usage yet.<br/>See earlier versions instead for production usage (v0.2.1). |
 | --- | --- |
 
-# eid
+# eid (previously eid-provider)
 This module is developed to enable rapid deployment of identity based authentication for Node.js by creating a common interface to most of the suppliers for official electronic identification and it allows you to mix and match your suppliers. This is a reusability code port of code that I have contributed to [teams-app-eid](https://github.com/DennizSvens/teams-app-eid) with some smart addons and international support.
 
 ### Simple to use
@@ -51,6 +51,5 @@ Clients are the classes that manage communication with the backend services. The
 | [GrandID](clients/grandid/readme.md) | Freja eID, BankID, Mobile SiTHS | Svensk E-Identitet AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
 | [Signicat](clients/signicat/readme.md) | BankID | Signicat | :heavy_check_mark: |  | :sweden: |
 | [IDKollen](clients/idkollen/readme.md) | BankID | IDkollen i Sverige AB | :heavy_check_mark: | :heavy_check_mark:  | :sweden: |
-
 
 The configuration options should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.

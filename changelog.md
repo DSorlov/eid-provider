@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Compability calls implemented to make transition easier to eid
 - frejaeid and frejaorgid have been merged into one client frejaeid
 - ftbankid and ftfrejaeid have been merged into new client grp2
+- gbankid, bfrejaeid and ghsaid have been merged into new client grandid
 - Implemented new client signicat
+- Reduced external dependencies, now only jsonwebtoken is required.
 
 ## [0.2.1] (2021-04-08)
 
