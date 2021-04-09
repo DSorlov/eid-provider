@@ -45,10 +45,11 @@ Clients are the classes that manage communication with the backend services. The
 
 | Client | ID Types | Vendor | Authentication | Signing | Markets |
 | --- | --- | --- | --- | --- | --- |
-| [FrejaEID](clients/frejaeid/readme.md) | Freja eID | Freja eID AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
-| [BankID](clients/bankid/readme.md) | BankID | Finansiell ID-Teknik AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: |
-| [GRP2](clients/grp2/readme.md) | Freja eID, BankID | Funktionstjänster/CGI | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
+| [FrejaEID](clients/frejaeid/readme.md) | Freja eID | Freja eID AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: :denmark: :norway: :finland: |
+| [BankID](clients/bankid/readme.md) | BankID | Finansiell ID-Teknik AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
+| [GRP2](clients/grp2/readme.md) | Freja eID, SE BankID | Funktionstjänster/CGI | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
 | [GrandID](clients/grandid/readme.md) | Freja eID, BankID, Mobile SiTHS | Svensk E-Identitet AB | :heavy_check_mark: | :heavy_check_mark: | :sweden: |
+| [Signicat](clients/signicat/readme.md) | BankID | Signicat | :heavy_check_mark: |  | :sweden: |
 
 
 The configuration options should be quite obvious as what they do. If you are unsure your supplier will most probably be able to determine what information you need. Most modules have sane values, certificates etc for most testing services and production services however there is no production credentials and you need to strike an agreement with the services yourself to obtain these.

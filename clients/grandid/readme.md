@@ -2,9 +2,6 @@
 
 Client for communication with GrandID interface for BankID, Freja eID and SiTHS.
 
-**This module is not yet fully tested**
-
-
 
 | Information |   |
 | --- | --- |

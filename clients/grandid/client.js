@@ -20,104 +20,154 @@ class GrandID extends BaseClient {
         if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
         if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
 
-        var result = await this._httpRequest(`${this.settings.endpoint}/json1.1/GetSession?apiKey=${this.settings.apikey}&authenticateServiceKey=${this.settings.servicekey}&sessionId=${data.id}`);
+        if (this.settings.provider==="freja") {
+            var checkUrl = 'https://login.grandid.com/?sessionid='+data.id+"&poll=1";
+            var result = await this._httpRequest(checkUrl,{headers:{'X-Requested-With': 'XMLHttpRequest'}});
+            var resultData = JSON.parse(result.data);
 
-        if (result.statusCode===599) {
-            return this._createErrorMessage('internal_error',result.statusMessage);
-        } else if (result.statusCode===200) {
-            var resultData = JSON.parse(result.Data);
+            switch(resultData.status) {
+                case "STARTED":
+                    return this._createPendingMessage('notdelivered');
+                case "DELIVERED_TO_MOBILE":
+                    return this._createPendingMessage('user_in_app');
+                case "CANCELED":
+                case "REJECTED":
+                    return this._createErrorMessage('cancelled_by_user');
+                case "EXPIRED":
+                    return this._createErrorMessage('expired_transaction');
+                case "RP_CANCELLED":
+                    return this._createErrorMessage('cancelled_by_idp');
+                case "APPROVED":
 
-            if (resultData.errorObject) {
-                if (resultData.errorObject.code==='NOTLOGGEDIN') {
-                    return this._createErrorMessage('api_error', 'Probably using the wrong key: '+resultData.errorObject.message);
-                 } else if (resultData.errorObject.code==='BANKID_MSG') {
-                     if (resultData.errorObject.message.hintCode) {
-                         switch(resultData.errorObject.message.hintCode) {
-                             case "expiredTransaction":
-                                 this._createErrorMessage('expired_transaction');
-                             case "outstandingTransaction":
-                                this._createPendingMessage('notdelivered');
-                             case "NOTLOGGEDIN":
-                                this._createPendingMessage('notdelivered');
-                             case "userSign":
-                                this._createPendingMessage('user_in_app');
-                             case "noClient":
-                                this._createPendingMessage('delivered');
-                             case "userCancel":
-                                this._createErrorMessage('cancelled_by_user');
-                             case "cancelled":
-                                this._createErrorMessage('cancelled_by_idp');
-                             case "startFailed":
-                                this._createErrorMessage('initialization_error');
-                             default:
-                                return this._createErrorMessage('api_error', resultData.errorObject.message);
-                            }
-                     }
-                 }else if (resultData.errorObject.code==='NETID_ACCESS_MESSAGE') {
-                    if (resultData.errorObject.message) {
-                        switch(resultData.errorObject.message) {
-                            case "EXPIRED_TRANSACTION":
-                                this._createErrorMessage('expired_transaction');
-                            case "OUTSTANDING_TRANSACTION":
-                                this._createPendingMessage('notdelivered');
-                            case "NOTLOGGEDIN":
-                                this._createPendingMessage('notdelivered');
-                            case "USER_SIGN":
-                                this._createPendingMessage('user_in_app');
-                            case "CANCELLED":
-                                this._createErrorMessage('cancelled_by_idp');
-                            case "START_FAILED":
-                                this._createErrorMessage('initialization_error');
-                            default:
-                                return this._createErrorMessage('api_error', resultData.errorObject.message);
-                           }
+                    checkUrl = 'https://login.grandid.com/?sessionid='+data.id+"&done=1";
+                    await this._httpRequest(checkUrl,{headers:{'X-Requested-With': 'XMLHttpRequest'}});  
+                    
+                    result = await this._httpRequest(`${this.settings.endpoint}/json1.1/GetSession?apiKey=${this.settings.apikey}&authenticateServiceKey=${this.settings.servicekey}&sessionId=${data.id}`);
+                    
+                    if (result.statusCode===200) {
+                        var frejaResult = JSON.parse(result.data);
+
+                        return this._createCompletionMessage(
+                            frejaResult.userAttributes.requestedAttributes.ssn.ssn,
+                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.name,
+                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.surname,
+                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.name + ' ' + frejaResult.userAttributes.requestedAttributes.basicUserInfo.surname);
+
+                    } else {
+                        return this._createErrorMessage('api_error', 'Unknown response from API: '+result.statusMessage);
                     }
-                }else{
-                     return this._createErrorMessage('api_error', resultData.errorObject.message);
-                 }
-         
-            } else {
-                return this._createErrorMessage('communication_error', result.data);
+
+                default:
+                    return this._createErrorMessage('api_error', resultData.errorObject.message);
             }
+    
 
         } else {
+            var result = await this._httpRequest(`${this.settings.endpoint}/json1.1/GetSession?apiKey=${this.settings.apikey}&authenticateServiceKey=${this.settings.servicekey}&sessionId=${data.id}`);
 
-            try {
-                var resultData = JSON.parse(result.Data);
-
-                if (resultData.errorObject.code==="BANKID_MSG") {
-
-                    if (resultData.errorObject.message==='Session id does not exist') {
-                        return this._createErrorMessage('request_id_invalid');
-                    } else{
-                        return this._createErrorMessage('api_error', resultData.errorObject.message);
-                    }                    
-
-                } else if (resultData.errorObject.code==="NETID_ACCESS_MESSAGE") {
-
-                    if (resultData.errorObject.message==='Session id does not exist') {
-                        return this._createErrorMessage('request_id_invalid');
-                    } else{
-                        return this._createErrorMessage('api_error', resultData.errorObject.message);
-                    }                    
-
-                } else if (resultData.errorOnbject.code==="FREJA_MSG") {
-
-                    if (resultData.errorObject.message==='Session id does not exist') {
-                        return this._createErrorMessage('request_id_invalid');
-                    } else{
-                        return this._createErrorMessage('api_error', resultData.errorObject.message);
-                    }                    
-
+            if (result.statusCode===599) {
+                return this._createErrorMessage('internal_error',result.statusMessage);
+            } else if (result.statusCode===200) {
+                var resultData = JSON.parse(result.data);
+    
+                if (resultData.errorObject) {
+                    if (resultData.errorObject.code==='NOTLOGGEDIN') {
+                        return this._createErrorMessage('api_error', 'Probably using the wrong key: '+resultData.errorObject.message);
+                     } else if (resultData.errorObject.code==='BANKID_MSG') {
+                         if (resultData.errorObject.message.hintCode) {
+                             switch(resultData.errorObject.message.hintCode) {
+                                 case "expiredTransaction":
+                                    return this._createErrorMessage('expired_transaction');
+                                 case "outstandingTransaction":
+                                    return this._createPendingMessage('notdelivered');
+                                 case "NOTLOGGEDIN":
+                                    return this._createPendingMessage('notdelivered');
+                                 case "userSign":
+                                    return this._createPendingMessage('user_in_app');
+                                 case "noClient":
+                                    return this._createPendingMessage('delivered');
+                                 case "userCancel":
+                                    return this._createErrorMessage('cancelled_by_user');
+                                 case "cancelled":
+                                    return this._createErrorMessage('cancelled_by_idp');
+                                 case "startFailed":
+                                    return this._createErrorMessage('initialization_error');
+                                 default:
+                                    return this._createErrorMessage('api_error', resultData.errorObject.message);
+                                }
+                         }
+                     }else if (resultData.errorObject.code==='NETID_ACCESS_MESSAGE') {
+                        if (resultData.errorObject.message) {
+                            switch(resultData.errorObject.message) {
+                                case "EXPIRED_TRANSACTION":
+                                    return this._createErrorMessage('expired_transaction');
+                                case "OUTSTANDING_TRANSACTION":
+                                    return this._createPendingMessage('notdelivered');
+                                case "NOTLOGGEDIN":
+                                    return this._createPendingMessage('notdelivered');
+                                case "USER_SIGN":
+                                    return this._createPendingMessage('user_in_app');
+                                case "CANCELLED":
+                                    return this._createErrorMessage('cancelled_by_idp');
+                                case "START_FAILED":
+                                    return this._createErrorMessage('initialization_error');
+                                default:
+                                    return this._createErrorMessage('api_error', resultData.errorObject.message);
+                               }
+                        }
+                    }else{
+                         return this._createErrorMessage('api_error', resultData.errorObject.message);
+                     }
+             
                 } else {
-                    return this._createErrorMessage('api_error','Unknown error: '+resultData.message);
+                    return this._createCompletionMessage(
+                        resultData.userAttributes.personalNumber,
+                        resultData.userAttributes.givenName,
+                        resultData.userAttributes.surname,
+                        resultData.userAttributes.name);
                 }
-
-            } catch(err) {
-                return this._createErrorMessage('communication_error','Mallformed server message received: '+result.Data);
+    
+            } else {
+    
+                try {
+                    var resultData = JSON.parse(result.data);
+    
+                    if (resultData.errorObject.code==="BANKID_MSG") {
+    
+                        if (resultData.errorObject.message==='Session id does not exist') {
+                            return this._createErrorMessage('request_id_invalid');
+                        } else{
+                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                        }                    
+    
+                    } else if (resultData.errorObject.code==="NETID_ACCESS_MESSAGE") {
+    
+                        if (resultData.errorObject.message==='Session id does not exist') {
+                            return this._createErrorMessage('request_id_invalid');
+                        } else{
+                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                        }                    
+    
+                    } else if (resultData.errorOnbject.code==="FREJA_MSG") {
+    
+                        if (resultData.errorObject.message==='Session id does not exist') {
+                            return this._createErrorMessage('request_id_invalid');
+                        } else{
+                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                        }                    
+    
+                    } else {
+                        return this._createErrorMessage('api_error','Unknown error: '+resultData.message);
+                    }
+    
+                } catch(err) {
+                    return this._createErrorMessage('communication_error','Mallformed server message received: '+result.Data);
+                }
+                
             }
-            
+    
         }
+
 
     }
 
@@ -184,21 +234,27 @@ class GrandID extends BaseClient {
             } else {
 
                 var autoStartUrl = '';
+                var autoStartToken = '';
                 if (this.settings.provider==="bankid") {
                     autoStartUrl = "bankid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null";
+                    autoStartToken = resultData.autoStartToken;
                 } else if (this.settings.provider==="freja") {
-                    autoStartUrl = "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(resultData.autoStartToken);                   
 
-                    var response = await this._httpRequest(resultData.redirectUrl+"&init=1",{headers:{'Content-Type': 'application/x-www-form-urlencoded'}},'frejaSubmit=Logga%20in&userIdentifier='+data.id);
-                    response=response;
+                    var response = await this._httpRequest(resultData.redirectUrl+"&init=1",{headers:{'X-Requested-With': 'XMLHttpRequest'}},'frejaSubmit=Logga%20in&userIdentifier='+data.id);
+                    if (response.statusCode!==200) return this._createErrorMessage('internal_error','GrandIDFreja Workaround Failure');
+
+                    var responseData = JSON.parse(response.data);
+                    autoStartUrl = "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(responseData.token);
+                    autoStartToken = responseData.token;                  
 
                 } else {
-                    autoStartUrl = "netid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null"
+                    autoStartUrl = "netid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null";
+                    autoStartToken = resultData.autoStartToken;
                 }
 
                 return this._createInitializationMessage(resultData.sessionId, {
                     autostart_url: autoStartUrl,
-                    autostart_token: resultData.autoStartToken
+                    autostart_token: autoStartToken
                 });
             }
 

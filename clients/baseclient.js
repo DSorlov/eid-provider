@@ -152,21 +152,24 @@ class BaseClient {
     async _httpRequest(url,customoptions={},data=undefined) {
         return new Promise((resolve) => {
 
-            //Create request options, automatically determine if get or post
+            //Lets join together all the headers
             var pjson = require('../package.json');
+            var headers = Object.assign({
+                'Content-Type': 'application/json',
+                'User-Agent': `eid/${pjson.version} (${this.clientInfo.name}/${this.clientInfo.version})`
+            }, customoptions.headers ? customoptions.headers : {});
+            customoptions.headers = headers;
+
+            //Create request options, automatically determine if get or post
             var options = Object.assign({
                 agent: this.httpsAgent,
-                method: data ? "POST": "GET",
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                method: data ? "POST": "GET"
             }, customoptions);
-            options.headers['User-Agent'] = `eid/${pjson.version} (${this.clientInfo.name}/${this.clientInfo.version})`;
 
             //if we are doing a post also let them know the size of our data
             if (data) options.headers['Content-Length']= data.length;
 
-            //Make the request
+            //Make the request  
             var req = https.request(url, options, (res) => {
                 let data = '';
 
@@ -196,9 +199,9 @@ class BaseClient {
 
             //If we are doing POST we also need to send the data of
             if (data) {
-                req.write(data);
-                req.end();    
+                req.write(data);   
             }
+            req.end(); 
         });        
     }
 
