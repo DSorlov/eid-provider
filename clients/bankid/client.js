@@ -31,14 +31,13 @@ class BankID extends BaseClient {
             orderRef: data.id
         };
         var result = await this._httpRequest(`${this.settings.endpoint}/collect`,{},JSON.stringify(postData));
-        var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {           
             return this._createErrorMessage('internal_error',result.statusMessage);        
         } else if (result.statusCode===200) {
 
-            if (resultData.hintCode) {
-                switch(resultData.hintCode) {
+            if (result.json.hintCode) {
+                switch(result.json.hintCode) {
                     case "expiredTransaction":
                         return this._createErrorMessage('expired_transaction');
                     case "outstandingTransaction":
@@ -52,19 +51,19 @@ class BankID extends BaseClient {
                     case "cancelled":
                         return this._createErrorMessage('cancelled_by_idp');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error '${resultData.hintCode}' was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error '${result.json.hintCode}' was received`);
                 }                
             } else {
 
-                if (resultData.status==="complete") {
+                if (result.json.status==="complete") {
 
                     return this._createCompletionMessage(
-                        resultData.completionData.user.personalNumber,
-                        resultData.completionData.user.givenName,
-                        resultData.completionData.user.surname,
-                        resultData.completionData.user.name, {
-                            signature: resultData.completionData.signature,
-                            ocspResponse: resultData.completionData.ocspResponse       
+                        result.json.completionData.user.personalNumber,
+                        result.json.completionData.user.givenName,
+                        result.json.completionData.user.surname,
+                        result.json.completionData.user.name, {
+                            signature: result.json.completionData.signature,
+                            ocspResponse: result.json.completionData.ocspResponse       
                         }); 
 
                 } else {
@@ -74,12 +73,12 @@ class BankID extends BaseClient {
             }
 
         } else {
-            if (resultData.errorCode) {
-                switch(resultData.errorCode)  {
+            if (result.json.errorCode) {
+                switch(result.json.errorCode)  {
                     case 'invalidParameters':                       
                         return this._createErrorMessage('request_id_invalid');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error '${resultData.errorCode}' was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error '${result.json.errorCode}' was received`);
                 }
             } else {
                 return this._createErrorMessage('communication_error',result.statusMessage);
@@ -133,7 +132,6 @@ class BankID extends BaseClient {
         }
 
         var result = await this._httpRequest(`${this.settings.endpoint}/${endpointUri}`,{},JSON.stringify(postData));
-        var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
             
@@ -141,27 +139,27 @@ class BankID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            return this._createInitializationMessage(resultData.orderRef, {
-                autostart_token: resultData.autoStartToken,
-                autostart_url: "bankid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null"
+            return this._createInitializationMessage(result.json.orderRef, {
+                autostart_token: result.json.autoStartToken,
+                autostart_url: "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null"
             });
 
         } else {
 
-            if (resultData.errorCode) {
-                switch(resultData.errorCode)  {
+            if (result.json.errorCode) {
+                switch(result.json.errorCode)  {
                     case 'invalidParameters':                       
-                        if (resultData.details==='Incorrect personalNumber') {
+                        if (result.json.details==='Incorrect personalNumber') {
                             return this._createErrorMessage('request_ssn_invalid');
-                        } else if (resultData.details==='Invalid userVisibleData') {
+                        } else if (result.json.details==='Invalid userVisibleData') {
                             return this._createErrorMessage('request_text_invalid');
                         } else {
-                            return this._createErrorMessage('api_error', `Unknwon parameter error '${resultData.details}' was received`);
+                            return this._createErrorMessage('api_error', `Unknwon parameter error '${result.json.details}' was received`);
                         }                    
                     case 'alreadyInProgress':
                         return this._createErrorMessage('already_in_progress');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error '${resultData.errorCode}' was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error '${result.json.errorCode}' was received`);
                 }
             } else {
                 return this._createErrorMessage('communication_error',result.statusMessage);

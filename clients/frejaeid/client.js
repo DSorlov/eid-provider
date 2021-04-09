@@ -73,7 +73,6 @@ class FrejaEID extends BaseClient {
         }    
 
         var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},requestData);
-        var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
             
@@ -81,8 +80,8 @@ class FrejaEID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            if (resultData.code) {
-                switch(resultData.code) {
+            if (result.json.code) {
+                switch(result.json.code) {
                     case 1004:
                         return this._createErrorMessage('api_error', 'Access to the service is denied.');
                     case 1008:
@@ -90,10 +89,10 @@ class FrejaEID extends BaseClient {
                     case 1100:
                         return this._createErrorMessage('request_id_invalid');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error ${resultData.code} was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error ${result.json.code} was received`);
                 }
             } else {
-                switch(resultData.status) {
+                switch(result.json.status) {
                     case "STARTED":
                         return this._createPendingMessage('notdelivered');
                     case "DELIVERED_TO_MOBILE":
@@ -110,8 +109,8 @@ class FrejaEID extends BaseClient {
                         try {
                             //Trying to be efficient and reuse our userInfo object we sent in
                             //Make sure the data we got is signed and fail if verification fails
-                            var jwtInfo = jwt.decode(resultData.details, { complete: true });
-                            var decoded = jwt.verify(resultData.details, this.settings.jwt_cert[jwtInfo.header.x5t]);
+                            var jwtInfo = jwt.decode(result.json.details, { complete: true });
+                            var decoded = jwt.verify(result.json.details, this.settings.jwt_cert[jwtInfo.header.x5t]);
                             var userId = '';
                             if (decoded.userInfoType==="N/A") {
                                 if (decoded.requestedAttributes.ssn) {
@@ -139,7 +138,7 @@ class FrejaEID extends BaseClient {
                         var fullname = '';
                         var id = userId;
                         var extras = {
-                            jwt_token: resultData.details
+                            jwt_token: result.json.details
                         };
 
                         if (decoded.requestedAttributes.dateOfBirth) extras.date_of_birth = decoded.requestedAttributes.dateOfBirth;
@@ -164,7 +163,7 @@ class FrejaEID extends BaseClient {
                         return this._createCompletionMessage(id,firstname,lastname,fullname,extras);       
 
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon status '${resultData.status}' was received`);
+                        return this._createErrorMessage('api_error', `Unknwon status '${result.json.status}' was received`);
                 }
             }
 
@@ -244,8 +243,7 @@ class FrejaEID extends BaseClient {
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
         } else if (result.statusCode===200) {
-            var resultData = JSON.parse(result.data);
-            return this._createSuccessMessage(resultData.userInfos);
+            return this._createSuccessMessage(result.json.userInfos);
         } else {
             return this._createErrorMessage('communication_error',result.statusMessage);
         }
@@ -260,11 +258,10 @@ class FrejaEID extends BaseClient {
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
         } else if (result.statusCode===200) {
-            var resultData = JSON.parse(result.data);
-
-            if (result.data.code)
+            
+            if (result.json.code)
             {
-                switch(result.data.code) {
+                switch(result.json.code) {
                     case 1008:
                     case 1004:
                         return this._createErrorMessage('api_error','Access denied');
@@ -272,7 +269,7 @@ class FrejaEID extends BaseClient {
                     case 4001:
                         return this._createErrorMessage('request_id_invalid');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error ${resultData.code} was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error ${result.json.code} was received`);
                 }
             } else {
                 return this._createSuccessMessage();
@@ -330,7 +327,6 @@ class FrejaEID extends BaseClient {
         }
         
         var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},postData);
-        var resultData = result.data!=='' ? JSON.parse(result.data) : {};
 
         if (result.statusCode===599) {
             
@@ -338,16 +334,16 @@ class FrejaEID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            var token = `${requstType}${resultData.authRef||resultData.signRef||resultData.orgIdRef}`;
+            var token = `${requstType}${result.json.authRef||result.json.signRef||result.json.orgIdRef}`;
             return this._createInitializationMessage(token, {
                 autostart_token: token,
-                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(resultData.signRef)
+                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(result.json.signRef)
             });
 
         } else {
 
-            if (resultData.code) {
-                switch(resultData.code)  {
+            if (result.json.code) {
+                switch(result.json.code)  {
                     case 1012:
                         return this._createErrorMessage('cancelled_by_idp','Not Found');
                     case 1005: 
@@ -359,7 +355,7 @@ class FrejaEID extends BaseClient {
                     case 2003:
                         return this._createErrorMessage('cancelled_by_idp','No custom identifier');
                     default:
-                        return this._createErrorMessage('api_error', `Unknwon error ${resultData.code} was received`);
+                        return this._createErrorMessage('api_error', `Unknwon error ${result.json.code} was received`);
                 }
             } else {
                 return this._createErrorMessage('communication_error',result.statusMessage);

@@ -23,9 +23,8 @@ class GrandID extends BaseClient {
         if (this.settings.provider==="freja") {
             var checkUrl = 'https://login.grandid.com/?sessionid='+data.id+"&poll=1";
             var result = await this._httpRequest(checkUrl,{headers:{'X-Requested-With': 'XMLHttpRequest'}});
-            var resultData = JSON.parse(result.data);
 
-            switch(resultData.status) {
+            switch(result.json.status) {
                 case "STARTED":
                     return this._createPendingMessage('notdelivered');
                 case "DELIVERED_TO_MOBILE":
@@ -45,20 +44,19 @@ class GrandID extends BaseClient {
                     result = await this._httpRequest(`${this.settings.endpoint}/json1.1/GetSession?apiKey=${this.settings.apikey}&authenticateServiceKey=${this.settings.servicekey}&sessionId=${data.id}`);
                     
                     if (result.statusCode===200) {
-                        var frejaResult = JSON.parse(result.data);
 
                         return this._createCompletionMessage(
-                            frejaResult.userAttributes.requestedAttributes.ssn.ssn,
-                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.name,
-                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.surname,
-                            frejaResult.userAttributes.requestedAttributes.basicUserInfo.name + ' ' + frejaResult.userAttributes.requestedAttributes.basicUserInfo.surname);
+                            result.json.userAttributes.requestedAttributes.ssn.ssn,
+                            result.json.userAttributes.requestedAttributes.basicUserInfo.name,
+                            result.json.userAttributes.requestedAttributes.basicUserInfo.surname,
+                            result.json.userAttributes.requestedAttributes.basicUserInfo.name + ' ' + result.json.userAttributes.requestedAttributes.basicUserInfo.surname);
 
                     } else {
                         return this._createErrorMessage('api_error', 'Unknown response from API: '+result.statusMessage);
                     }
 
                 default:
-                    return this._createErrorMessage('api_error', resultData.errorObject.message);
+                    return this._createErrorMessage('api_error', result.json.errorObject.message);
             }
     
 
@@ -68,14 +66,13 @@ class GrandID extends BaseClient {
             if (result.statusCode===599) {
                 return this._createErrorMessage('internal_error',result.statusMessage);
             } else if (result.statusCode===200) {
-                var resultData = JSON.parse(result.data);
     
-                if (resultData.errorObject) {
-                    if (resultData.errorObject.code==='NOTLOGGEDIN') {
-                        return this._createErrorMessage('api_error', 'Probably using the wrong key: '+resultData.errorObject.message);
-                     } else if (resultData.errorObject.code==='BANKID_MSG') {
-                         if (resultData.errorObject.message.hintCode) {
-                             switch(resultData.errorObject.message.hintCode) {
+                if (result.json.errorObject) {
+                    if (result.json.errorObject.code==='NOTLOGGEDIN') {
+                        return this._createErrorMessage('api_error', 'Probably using the wrong key: '+result.json.errorObject.message);
+                     } else if (result.json.errorObject.code==='BANKID_MSG') {
+                         if (result.json.errorObject.message.hintCode) {
+                             switch(result.json.errorObject.message.hintCode) {
                                  case "expiredTransaction":
                                     return this._createErrorMessage('expired_transaction');
                                  case "outstandingTransaction":
@@ -93,12 +90,12 @@ class GrandID extends BaseClient {
                                  case "startFailed":
                                     return this._createErrorMessage('initialization_error');
                                  default:
-                                    return this._createErrorMessage('api_error', resultData.errorObject.message);
+                                    return this._createErrorMessage('api_error', result.json.errorObject.message);
                                 }
                          }
-                     }else if (resultData.errorObject.code==='NETID_ACCESS_MESSAGE') {
-                        if (resultData.errorObject.message) {
-                            switch(resultData.errorObject.message) {
+                     }else if (result.json.errorObject.code==='NETID_ACCESS_MESSAGE') {
+                        if (result.json.errorObject.message) {
+                            switch(result.json.errorObject.message) {
                                 case "EXPIRED_TRANSACTION":
                                     return this._createErrorMessage('expired_transaction');
                                 case "OUTSTANDING_TRANSACTION":
@@ -112,52 +109,51 @@ class GrandID extends BaseClient {
                                 case "START_FAILED":
                                     return this._createErrorMessage('initialization_error');
                                 default:
-                                    return this._createErrorMessage('api_error', resultData.errorObject.message);
+                                    return this._createErrorMessage('api_error', result.json.errorObject.message);
                                }
                         }
                     }else{
-                         return this._createErrorMessage('api_error', resultData.errorObject.message);
+                         return this._createErrorMessage('api_error', result.json.errorObject.message);
                      }
              
                 } else {
                     return this._createCompletionMessage(
-                        resultData.userAttributes.personalNumber,
-                        resultData.userAttributes.givenName,
-                        resultData.userAttributes.surname,
-                        resultData.userAttributes.name);
+                        result.json.userAttributes.personalNumber,
+                        result.json.userAttributes.givenName,
+                        result.json.userAttributes.surname,
+                        result.json.userAttributes.name);
                 }
     
             } else {
     
                 try {
-                    var resultData = JSON.parse(result.data);
     
-                    if (resultData.errorObject.code==="BANKID_MSG") {
+                    if (result.json.errorObject.code==="BANKID_MSG") {
     
-                        if (resultData.errorObject.message==='Session id does not exist') {
+                        if (result.json.errorObject.message==='Session id does not exist') {
                             return this._createErrorMessage('request_id_invalid');
                         } else{
-                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                            return this._createErrorMessage('api_error', result.json.errorObject.message);
                         }                    
     
-                    } else if (resultData.errorObject.code==="NETID_ACCESS_MESSAGE") {
+                    } else if (result.json.errorObject.code==="NETID_ACCESS_MESSAGE") {
     
-                        if (resultData.errorObject.message==='Session id does not exist') {
+                        if (result.json.errorObject.message==='Session id does not exist') {
                             return this._createErrorMessage('request_id_invalid');
                         } else{
-                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                            return this._createErrorMessage('api_error', result.json.errorObject.message);
                         }                    
     
-                    } else if (resultData.errorOnbject.code==="FREJA_MSG") {
+                    } else if (result.json.errorOnbject.code==="FREJA_MSG") {
     
-                        if (resultData.errorObject.message==='Session id does not exist') {
+                        if (result.json.errorObject.message==='Session id does not exist') {
                             return this._createErrorMessage('request_id_invalid');
                         } else{
-                            return this._createErrorMessage('api_error', resultData.errorObject.message);
+                            return this._createErrorMessage('api_error', result.json.errorObject.message);
                         }                    
     
                     } else {
-                        return this._createErrorMessage('api_error','Unknown error: '+resultData.message);
+                        return this._createErrorMessage('api_error','Unknown error: '+result.json.message);
                     }
     
                 } catch(err) {
@@ -219,9 +215,8 @@ class GrandID extends BaseClient {
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
         } else if (result.statusCode===200) {
-            var resultData = JSON.parse(result.data);
-            if (resultData.errorObject) {
-                switch(resultData.errorObject.code) {
+            if (result.json.errorObject) {
+                switch(result.json.errorObject.code) {
                     case 'INVALID_HSA_ID':
                     case 'UNKNOWN_USER':
                         return this._createErrorMessage('request_ssn_invalid', 'No such HSA ID found'); 
@@ -229,30 +224,29 @@ class GrandID extends BaseClient {
                     case 'BANKID_SIGN_NOT_ALLOWED':
                         return this._createErrorMessage('api_error', 'Key is not allowed for document signing');
                     default:
-                        return this._createErrorMessage('communication_error', 'Remote api returned error: '+ resultData.errorObject.message);
+                        return this._createErrorMessage('communication_error', 'Remote api returned error: '+ result.json.errorObject.message);
                 }
             } else {
 
                 var autoStartUrl = '';
                 var autoStartToken = '';
                 if (this.settings.provider==="bankid") {
-                    autoStartUrl = "bankid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null";
-                    autoStartToken = resultData.autoStartToken;
+                    autoStartUrl = "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null";
+                    autoStartToken = result.json.autoStartToken;
                 } else if (this.settings.provider==="freja") {
 
-                    var response = await this._httpRequest(resultData.redirectUrl+"&init=1",{headers:{'X-Requested-With': 'XMLHttpRequest'}},'frejaSubmit=Logga%20in&userIdentifier='+data.id);
+                    var response = await this._httpRequest(result.json.redirectUrl+"&init=1",{headers:{'X-Requested-With': 'XMLHttpRequest'}},'frejaSubmit=Logga%20in&userIdentifier='+data.id);
                     if (response.statusCode!==200) return this._createErrorMessage('internal_error','GrandIDFreja Workaround Failure');
 
-                    var responseData = JSON.parse(response.data);
-                    autoStartUrl = "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(responseData.token);
-                    autoStartToken = responseData.token;                  
+                    autoStartUrl = "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(response.json.token);
+                    autoStartToken = response.json.token;                  
 
                 } else {
-                    autoStartUrl = "netid:///?autostarttoken="+resultData.autoStartToken+"&redirect=null";
-                    autoStartToken = resultData.autoStartToken;
+                    autoStartUrl = "netid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null";
+                    autoStartToken = result.json.autoStartToken;
                 }
 
-                return this._createInitializationMessage(resultData.sessionId, {
+                return this._createInitializationMessage(result.json.sessionId, {
                     autostart_url: autoStartUrl,
                     autostart_token: autoStartToken
                 });
@@ -261,26 +255,25 @@ class GrandID extends BaseClient {
         } else {
 
             try {
-                var resultData = JSON.parse(result.data);
 
-                if (resultData.errorObject.code==="BANKID_ERROR") {
-                    switch(resultData.errorObject.message.response.errorCode)  {
+                if (result.json.errorObject.code==="BANKID_ERROR") {
+                    switch(result.json.errorObject.message.response.errorCode)  {
                         case "alreadyInProgress":
                             return this._createErrorMessage('already_in_progress');
                         case "invalidParameters":
-                            if (resultData.errorObject.message==='Incorrect personalNumber') {
+                            if (result.json.errorObject.message==='Incorrect personalNumber') {
                                 return this._createErrorMessage('request_ssn_invalid');
-                            } else if (resultData.errorObject.message==='Invalid userVisibleData') {
+                            } else if (result.json.errorObject.message==='Invalid userVisibleData') {
                                 return this._createErrorMessage('request_text_invalid');
                             } else {
-                                return this._createErrorMessage('api_error', resultData.errorObject.message);
+                                return this._createErrorMessage('api_error', result.json.errorObject.message);
                             }
                         default:
-                                return this._createErrorMessage('api_error', resultData.errorObject.code);
+                                return this._createErrorMessage('api_error', result.json.errorObject.code);
                     }                
                 }
 
-                return this._createErrorMessage('api_error', resultData.errorObject.code);
+                return this._createErrorMessage('api_error', result.json.errorObject.code);
 
 
             } catch(err) {

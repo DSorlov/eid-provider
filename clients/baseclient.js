@@ -146,7 +146,15 @@ class BaseClient {
             status: "success",
             extra: extras || {}
         };
-    }    
+    }
+    
+    _convertToJson(data) {
+        try {
+            return JSON.parse(data);
+        } catch (error) {
+            return undefined;
+        }
+    }
 
     //Simple httpRequest function supporting get and post
     async _httpRequest(url,customoptions={},data=undefined) {
@@ -160,6 +168,11 @@ class BaseClient {
             }, customoptions.headers ? customoptions.headers : {});
             customoptions.headers = headers;
 
+            //set the method to use
+            var method  = "GET";
+            if (data) method="POST";
+            if (data||data==="delete") method="DELETE";
+            
             //Create request options, automatically determine if get or post
             var options = Object.assign({
                 agent: this.httpsAgent,
@@ -184,6 +197,7 @@ class BaseClient {
                         statusCode: res.statusCode,
                         statusMessage: res.statusMessage,
                         headers: res.headers,
+                        json: this._convertToJson(data),
                         data: data
                     });
                 });
@@ -192,8 +206,9 @@ class BaseClient {
                 resolve({
                     statusCode: 599,
                     statusMessage: err.message,
-                    headers: {},
-                    data: ''
+                    headers: res.headers,
+                    json: undefined,
+                    data: undefined
                 });
             });
 

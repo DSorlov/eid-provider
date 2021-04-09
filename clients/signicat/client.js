@@ -33,15 +33,14 @@ class Signicat extends BaseClient {
         var result = await this._httpRequest(this.settings.oauth_endpoint,options,params.toString());
         
         if (result.statusCode===200) {
-            this.accessToken = JSON.parse(result.data);
+            this.accessToken = result.json;
             return this._createSuccessMessage();
         } 
 
         if (result.statusCode===599) return this._createErrorMessage('internal_error',result.statusMessage);
         
         try {
-            var error = JSON.parse(result.data);
-            return this._createErrorMessage('api_error', error.error);
+            return this._createErrorMessage('api_error', result.json.error);
         } catch (err) {
             return this._createErrorMessage('communication_error', "Cannot parse error message from remote server, http_state is "+result.statusCode);
         }
@@ -55,46 +54,43 @@ class Signicat extends BaseClient {
         var apiResponse = await this._authenticatedRequest(this.settings.api_endpoint+'/identification/v2/sessions/'+data.id);
 
         if (apiResponse.statusCode===200) {
-            var responseData = JSON.parse(apiResponse.data);
 
-            if (responseData.error) {
+            if (apiResponse.json.error) {
 
-                switch(responseData.error.code) {
+                switch(apiResponse.json.error.code) {
                     case "alreadyInProgress":
                         return this._createErrorMessage('already_in_progress');
                     default:
-                        return this._createErrorMessage('api_error',responseData.error.message);
+                        return this._createErrorMessage('api_error',apiResponse.json.error.message);
                 }
 
             } else {
 
-                switch(responseData.status) {
+                switch(apiResponse.json.status) {
                     case "created":
-                        return this._createPendingMessage('notdelivered');
+                        return this._createPendingMessage('delivered');
                     case "success":
                         return this._createCompletionMessage(
-                            responseData.identity.nin,
-                            responseData.identity.firstName,
-                            responseData.identity.lastName,
-                            responseData.identity.fullName,
-                            responseData.auditTrail);
+                            apiResponse.json.identity.nin,
+                            apiResponse.json.identity.firstName,
+                            apiResponse.json.identity.lastName,
+                            apiResponse.json.identity.fullName,
+                            apiResponse.json.auditTrail);
                     case "failed":
                         return this._createErrorMessage('api_error','Catch 22');
                     default:
-                        return this._createErrorMessage('api_error', responseData.status)
+                        return this._createErrorMessage('api_error', apiResponse.json.status)
                 }
 
             }
-
+            
         } else {
             try {
-                var error = JSON.parse(apiResponse.data);
-
-                switch(error.code){
+                switch(apiResponse.json.code){
                     case 'ID-1000':
                         return this._createErrorMessage('request_id_invalid');
                     default:
-                        return this._createErrorMessage('api_error', error.message)
+                        return this._createErrorMessage('api_error', apiResponse.json.message)
                 }
             }catch (err) {
                 return this._createErrorMessage('communication_error', 'Could not parse error: '+ apiResponse.statusMessage)
@@ -143,18 +139,16 @@ class Signicat extends BaseClient {
         var apiResponse = await this._authenticatedRequest(this.settings.api_endpoint+'/identification/v2/sessions',{},JSON.stringify(requestObject));
         
         if (apiResponse.statusCode===201) {
-            var responseData = JSON.parse(apiResponse.data);
-            var statusRequest = await this.pollRequest({id: responseData.id});
+            var statusRequest = await this.pollRequest({id: apiResponse.json.id});
 
             if (statusRequest.status==="error") 
                 return statusRequest;
             else 
-                return this._createInitializationMessage(responseData.id);
+                return this._createInitializationMessage(apiResponse.json.id);
 
         } else {
             try {
-                var error = JSON.parse(apiResponse.data);
-                return this._createErrorMessage('api_error', error.errors[0].message);
+                return this._createErrorMessage('api_error', apiResponse.json.errors[0].message);
             }catch (err) {
                 return this._createErrorMessage('communication_error', 'Could not parse error: '+ apiResponse.statusMessage)
             }
