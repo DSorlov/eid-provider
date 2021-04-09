@@ -5,7 +5,7 @@
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
-| :warning: | This is version 1.0.0-beta.4 and it is NOT intended for production usage yet.<br/>See earlier versions instead for production usage (v0.2.1). |
+| :warning: | This is version 1.0.0-beta.5 and it is NOT intended for production usage yet.<br/>See earlier versions instead for production usage (v0.2.1). |
 | --- | --- |
 
 # eid (previously eid-provider)
