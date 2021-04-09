@@ -9,7 +9,7 @@ module.exports = function(options) {
             endpoint: 'https://client.grandid.com',
             servicekey: '',
             apikey: '',
-            provider: options&&options.provider ? options.provider : ''
+            provider: ''
         }, (options||options.set) ? options.set : {});    
     } else {
         return Object.assign({
@@ -17,7 +17,7 @@ module.exports = function(options) {
             endpoint: 'https://client-test.grandid.com',
             servicekey: '',
             apikey: '',
-            provider: options&&options.provider ? options.provider : ''
+            provider: ''
         }, (options||options.set) ? options.set : {});    
     }
 
