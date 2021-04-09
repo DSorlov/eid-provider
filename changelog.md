@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - Compability calls implemented to make transition easier to eid
 - frejaeid and frejaorgid have been merged into one client frejaeid
 - ftbankid and ftfrejaeid have been merged into new client grp2
+- Implemented new client signicat
 
 ## [0.2.1] (2021-04-08)
 

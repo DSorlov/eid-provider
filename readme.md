@@ -5,7 +5,7 @@
 [![maintainer](https://img.shields.io/badge/maintainer-daniel%20sörlöv-blue.svg)](https://github.com/DSorlov)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/eid)
 
-| :warning: | This is version 1.0.0-beta.3 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
+| :warning: | This is version 1.0.0-beta.4 and it is NOT intended for production usage.<br/>See earlier versions instead for production usage (v0.2.1). |
 | --- | --- |
 
 # eid
@@ -13,7 +13,7 @@ This module is developed to enable rapid deployment of identity based authentica
 
 ### Simple to use
 
-Regardless of which backend service you use the basic usage is the same. Some backends require more configuration than others. However the classes expose same interface and responses so code is easy to use. You can read details of the [interface](docs/interface.md) or see some [more practical examples](docs/examples.md)
+Regardless of which backend service you use the basic usage is the same. Some backends require more configuration than others. However the classes expose same interface and responses so code is easy to use. You can read details of the [interface](docs/interface.md) or see some [more practical examples](docs/examples.md)   
 
 ```javascript
 const eid = require('eid');
