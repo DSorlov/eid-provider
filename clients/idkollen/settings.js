@@ -10,7 +10,7 @@ module.exports = function(options) {
         return {
             clientType: 'idkollen',
             endpoint: 'https://api.idkollen.se/v2',
-            key: 'e034e003-e153-11ea-a83f-0acb873dd6ee',
+            key: '',
             webhookkey: ''            
         };
     }
@@ -19,7 +19,7 @@ module.exports = function(options) {
     return {
         clientType: 'idkollen',
         endpoint: 'https://stgapi.idkollen.se/v2',
-        key: 'e034e003-e153-11ea-a83f-0acb873dd6ee',
+        key: '',
         webhookkey: ''
     };            
 
