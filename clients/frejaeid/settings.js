@@ -11,8 +11,7 @@ module.exports = function(options) {
             password: '',
             ca_cert: fs.readFileSync(path.join(__dirname,'/cert','prod.ca')),
             jwt_cert: {
-                'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(path.join(__dirname,'/cert','prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt')),
-                'onjnxVgI3oUzWQMLciD7sQZ4mqM': fs.readFileSync(path.join(__dirname,'/cert','prod_onjnxVgI3oUzWQMLciD7sQZ4mqM.jwt'))
+                'aRw9OLn2BhM7hxoc458cIXHfezw': fs.readFileSync(path.join(__dirname,'/cert','prod_aRw9OLn2BhM7hxoc458cIXHfezw.jwt'))
             },
             minimumLevel: 'EXTENDED',
             default_country: 'SE',
@@ -27,8 +26,7 @@ module.exports = function(options) {
         client_cert: fs.readFileSync(path.join(__dirname,'/cert','test.pfx')),
         ca_cert: fs.readFileSync(path.join(__dirname,'/cert','test.ca')),
         jwt_cert: {
-            '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(path.join(__dirname,'/cert','test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt')),
-            'HwMHK_gb3_iuNF1advMtlG0-fUs': fs.readFileSync(path.join(__dirname,'/cert','test_HwMHK_gb3_iuNF1advMtlG0-fUs.jwt'))
+            '2LQIrINOzwWAVDhoYybqUcXXmVs': fs.readFileSync(path.join(__dirname,'/cert','test_2LQIrINOzwWAVDhoYybqUcXXmVs.jwt'))
         },
         minimumLevel: 'EXTENDED',
         password: 'test',
