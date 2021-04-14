@@ -147,6 +147,7 @@ class FrejaEID extends BaseClient {
                         if (decoded.requestedAttributes.allPhoneNumbers) extras.phone_numbers = decoded.requestedAttributes.allPhoneNumbers;
                         if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
                         if (decoded.requestedAttributes.customIdentifier) extras.custom_identifier = decoded.requestedAttributes.customIdentifier;
+                        if (decoded.requestedAttributes.registrationLevel) extras.registration_level = decoded.requestedAttributes.registrationLevel;                         
                         
                         if (decoded.requestedAttributes.ssn) {
                             extras.ssn_number = decoded.requestedAttributes.ssn.ssn;
