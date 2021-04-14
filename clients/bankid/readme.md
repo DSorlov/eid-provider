@@ -53,3 +53,9 @@ var config = {
 ### Extension Methods
 
 The `doRequest` and `initRequest` accepts additional parameter `endUserIP` which can be set to the end user ip / remote requester ip. If not supplied it will be replaced by '127.0.0.1' as in earlier versions. Also accept `allowFingerprint` as boolean to specify if fingerprint auth is allowed in the app or not, if not specified default value from config will be used.
+
+If `id` is not supplied to `doRequest` and `initRequest` the request will start and the properties `qrStartSecret`,`qrStartToken`,`qrAuthTime` will be returned as extra attributes for use with QR-code logins. Also the `qrCodeString` is populated with an initial calculation for the request. 
+
+**Extension methods**
+
+* `createQRCodeString({qrStartSecret,qrStartToken,qrAuthTime})`<br/>Returns a correctly formatted QR-code for starting BankID app. The paramets are obtained when starting a authentication request without a id. It then returns `qrStartSecret`,`qrStartToken`,`qrAuthTime` as extra attributes. This method must be polled every 5 seconds at the most to obtain a new code when using QR-login.

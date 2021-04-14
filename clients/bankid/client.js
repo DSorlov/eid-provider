@@ -157,7 +157,8 @@ class BankID extends BaseClient {
                     autostart_url: "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null",
                     qrStartSecret: result.json.qrStartSecret,
                     qrStartToken: result.json.qrStartToken,
-                    qrAuthTime: Date()
+                    qrAuthTime: Date(),
+                    qrCodeString: createQRCodeString
                 });    
             } else {
                 return this._createInitializationMessage(result.json.orderRef, {

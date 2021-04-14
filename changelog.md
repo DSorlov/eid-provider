@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 - gbankid, bfrejaeid and ghsaid have been merged into new client grandid
 - Implemented new client signicat
 - Reduced external dependencies, now only jsonwebtoken is required.
+- Implemented support for QR-codes (API v5.1) in bankid
 
 ## [0.2.1] (2021-04-08)
 

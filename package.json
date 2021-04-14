@@ -1,6 +1,6 @@
 {
   "name": "eid",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "description": "Module for simple integration to electronic identities",
   "bundleDependencies": false,
   "deprecated": false,
