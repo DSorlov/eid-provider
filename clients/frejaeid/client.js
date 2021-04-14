@@ -282,7 +282,7 @@ class FrejaEID extends BaseClient {
     // Authentication Initialization Request
     async initRequest(data) {
         if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
-        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
+        if (!data.id) return this._createErrorMessage('internal_error','Id argument must be string');
 
         var infoType = this._unPack(data.id);
         var postData = '';

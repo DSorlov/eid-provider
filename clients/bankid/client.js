@@ -1,4 +1,5 @@
 const BaseClient = require('../baseclient.js');
+var crypto = require('crypto');
 
 class BankID extends BaseClient {
 
@@ -106,9 +107,19 @@ class BankID extends BaseClient {
 
     }
 
+    createQRCodeString(data) {
+        if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
+        if (!data.qrStartSecret||!data.qrStartToken||!data.qrAuthTime) this._createErrorMessage('internal_error','Needed attributes not supplied');
+        var initTime = (new Date(data.qrAuthTime)).getTime();
+        var currTime = (new Date()).getTime();
+        var timeDiff = Math.floor((currTime - initTime) / 1000);
+        var hash = crypto.createHmac('SHA256', data.qrStartSecret).update(timeDiff.toString()).digest("hex");
+        return `bankid.${data.qrStartToken}.${timeDiff}.${hash}`;
+    }
+
     async initRequest(data) {
         if (typeof data !== 'object') return this._createErrorMessage('internal_error','Supplied argument is not a class');
-        if (!data.id || typeof data.id !== 'string') return this._createErrorMessage('internal_error','Id argument must be string');
+        if (!data.id) return this._createErrorMessage('internal_error','Id argument must be string');
         var postData = '';
         var endpointUri = '';
 
@@ -116,7 +127,6 @@ class BankID extends BaseClient {
             endpointUri = 'sign';
             postData = {
                 endUserIp: data.endUserIp ? data.endUserUp : '127.0.0.1',
-                personalNumber: this._unPack(data.id),
                 userVisibleData: Buffer.from(data.text).toString('base64'),
                 requirement: {
                     allowFingerprint: data.allowFingerprint ? data.allowFingerprint : this.settings.allowFingerprint
@@ -125,11 +135,13 @@ class BankID extends BaseClient {
             endpointUri = 'auth';
             postData = {
                 endUserIp: data.endUserIp ? data.endUserUp : '127.0.0.1',
-                personalNumber: this._unPack(data.id),
                 requirement: {
                     allowFingerprint: data.allowFingerprint ? data.allowFingerprint : this.settings.allowFingerprint
             }};
         }
+
+        var personalId = this._unPack(data.id);
+        if (personalId) postData.personalNumber = personalId;
 
         var result = await this._httpRequest(`${this.settings.endpoint}/${endpointUri}`,{},JSON.stringify(postData));
 
@@ -139,10 +151,21 @@ class BankID extends BaseClient {
 
         } else if (result.statusCode===200) {
 
-            return this._createInitializationMessage(result.json.orderRef, {
-                autostart_token: result.json.autoStartToken,
-                autostart_url: "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null"
-            });
+            if (result.json.qrStartSecret) {
+                return this._createInitializationMessage(result.json.orderRef, {
+                    autostart_token: result.json.autoStartToken,
+                    autostart_url: "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null",
+                    qrStartSecret: result.json.qrStartSecret,
+                    qrStartToken: result.json.qrStartToken,
+                    qrAuthTime: Date()
+                });    
+            } else {
+                return this._createInitializationMessage(result.json.orderRef, {
+                    autostart_token: result.json.autoStartToken,
+                    autostart_url: "bankid:///?autostarttoken="+result.json.autoStartToken+"&redirect=null"
+                });
+            }
+
 
         } else {
 
@@ -171,6 +194,9 @@ class BankID extends BaseClient {
 
     // Supporting function to take care of any and all types of id that could be sent into bankid
     _unPack(data) {
+        if (data==="") return "";
+        if (data==="INFERRED") return "";
+
         if (typeof data === 'string') {
             return data;
         } else {
