@@ -13,10 +13,10 @@ class BaseClient {
     }
 
     // A number of compability methods to support old style
-    async pollAuthRequest(id) {
+    async pollAuthStatus(id) {
         return await this.pollRequest({id: id});
     }
-    async pollSignRequest(id) {
+    async pollSignStatus(id) {
         return await this.pollRequest({id: id});
     }
     async cancelAuthRequest(id) {
