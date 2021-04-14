@@ -1,6 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 
+async function clientListAsync() {
+    return clientList();
+}
+
 function clientList() {
     const clientPath = path.join(__dirname,"/clients/");
     const allClients = fs.readdirSync(clientPath, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name).filter(clnt => clnt !== 'template');
@@ -24,6 +28,10 @@ function clientList() {
     });
 
     return clientInfo;
+}
+
+async function configFactoryAsync(settings) {
+    return configFactory(settings);
 }
 
 function configFactory(settings) {
@@ -51,6 +59,10 @@ function configFactory(settings) {
         throw new Error(`getConfigObject Error: ${clientType} is not found.`)
     }
 
+}
+
+async function clientFactoryAsync(settings) {
+    return clientFactory(settings);
 }
 
 function clientFactory(settings) {
@@ -83,6 +95,9 @@ function clientFactory(settings) {
 
 module.exports = {
     configFactory,
+    configFactoryAsync,
     clientFactory,
-    clientList
+    clientFactoryAsync,
+    clientList,
+    clientListAsync    
 }
