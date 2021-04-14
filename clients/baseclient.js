@@ -156,7 +156,7 @@ class BaseClient {
         }
     }
 
-    //Simple httpRequest function supporting get and post
+    //Simple httpRequest function
     async _httpRequest(url,customoptions={},data=undefined) {
         return new Promise((resolve) => {
 
@@ -167,16 +167,11 @@ class BaseClient {
                 'User-Agent': `eid/${pjson.version} (${this.clientInfo.name}/${this.clientInfo.version})`
             }, customoptions.headers ? customoptions.headers : {});
             customoptions.headers = headers;
-
-            //set the method to use
-            var method  = "GET";
-            if (data) method="POST";
-            if (data||data==="delete") method="DELETE";
             
             //Create request options, automatically determine if get or post
             var options = Object.assign({
                 agent: this.httpsAgent,
-                method: data ? "POST": "GET"
+                method: customoptions.method ? customoptions.method : data ? "POST": "GET"
             }, customoptions);
 
             //if we are doing a post also let them know the size of our data

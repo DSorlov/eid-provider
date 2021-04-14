@@ -32,7 +32,8 @@ class IDKollen extends BaseClient {
         if (result.statusCode===404) return this._createPendingMessage('delivered');
 
         // Delete the webhook as we got a result!
-        await this._httpRequest('https://webhook.site/token/'+webhookId, whOptions, 'delete');
+        whOptions.method = "DELETE";
+        await this._httpRequest('https://webhook.site/token/'+webhookId, whOptions);
 
         // If a error message was received dump that to the client
         if (result.json.message) {
@@ -66,10 +67,10 @@ class IDKollen extends BaseClient {
 
         var orderRef = data.id.substring(0,36);
         var webhookId = data.id.substring(37,73);
-        var whOptions = {};
+        var whOptions = {method: 'DELETE'};
         if (this.settings.webhookkey!=='') whOptions.headers = { 'Api-Key': this.settings.webhookkey };
 
-        await this._httpRequest('https://webhook.site/token/'+webhookId, whOptions, 'delete');
+        await this._httpRequest('https://webhook.site/token/'+webhookId, whOptions);
 
         return this._createSuccessMessage();
     }
@@ -114,7 +115,8 @@ class IDKollen extends BaseClient {
         var apiResponse = await this._httpRequest(`${this.settings.endpoint}/${this.settings.key}/${endpoint}`,{},JSON.stringify(apiData));
 
         if (apiResponse.statusCode===599) {
-            await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions, 'delete');
+            whOptions.method = "DELETE";
+            await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions);
             return this._createErrorMessage('internal_error',result.statusMessage);
         } else if (apiResponse.statusCode===201) {
 
@@ -130,11 +132,13 @@ class IDKollen extends BaseClient {
                     case "alreadyInProgress":
                         return this._createErrorMessage('already_in_progress');
                     default:
-                        await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions, 'delete');
+                        whOptions.method = "DELETE";
+                        await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions);
                         return this._createErrorMessage('api_error',apiResponse.json.message);
                 }
             } else {
-                await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions, 'delete');
+                whOptions.method = "DELETE";
+                await this._httpRequest('https://webhook.site/token/'+whResponse.json.uuid, whOptions);
                 return this._createErrorMessage('communication_error', apiResponse.statusMessage);
             }
         }
