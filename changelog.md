@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ## [Unreleased]
 
+## [1.0.0] (2021-06-05)
+
 ### Breaking changes
 - Package name changed from eid-provider to eid
 - Major rehauling of architechture and internal file locations
