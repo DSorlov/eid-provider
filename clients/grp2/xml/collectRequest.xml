@@ -1,0 +1,14 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:v2="http://mobilityguard.com/grp/service/v2.0/">
+   <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
+   	<wsa:Action soap:mustUnderstand="1">http://mobilityguard.com/grp/service/v2.0/GrpServicePortType/CollectRequest</wsa:Action>
+	<wsa:MessageID soap:mustUnderstand="1">uuid:${uuid}</wsa:MessageID>
+   </soap:Header>
+   <soap:Body>
+      <v2:CollectRequest>
+         <policy>${policy}</policy>
+         <provider>${provider}</provider>
+         <rpDisplayName>${displayName}</rpDisplayName>
+         <orderRef>${orderRef}</orderRef>
+      </v2:CollectRequest>
+   </soap:Body>
+</soap:Envelope>
