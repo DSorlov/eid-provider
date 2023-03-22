@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ## [Unreleased]
 
+## [1.0.1] (2023-03-22)
+
+### Added
+- Updates to support new attributes in frejaeid
+- New certificates to support rollover in 2023
+- Bumped jsonwebtoken to 9.0.0
+
+### Notable changes
+- Field names in frejaeid under extras have been normalized
+- Versions under 1.0.0 are no longer supported for security updates
+
 ## [1.0.0] (2021-06-05)
 
 ### Breaking changes
@@ -117,6 +128,7 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
+[1.0.1]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.0
 [1.0.0]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.0
 [0.2.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.1
 [0.2.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.0
