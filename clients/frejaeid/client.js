@@ -138,21 +138,39 @@ class FrejaEID extends BaseClient {
                         var fullname = '';
                         var id = userId;
                         var extras = {
-                            jwt_token: result.json.details
+                            jwtToken: result.json.details
                         };
 
-                        if (decoded.requestedAttributes.dateOfBirth) extras.date_of_birth = decoded.requestedAttributes.dateOfBirth;
-                        if (decoded.requestedAttributes.emailAddress) extras.primary_email = decoded.requestedAttributes.emailAddress;
-                        if (decoded.requestedAttributes.allEmailAddresses) extras.email_addresses = decoded.requestedAttributes.allEmailAddresses;
-                        if (decoded.requestedAttributes.allPhoneNumbers) extras.phone_numbers = decoded.requestedAttributes.allPhoneNumbers;
+                        if (decoded.requestedAttributes.age) extras.age = decoded.requestedAttributes.age;
+                        if (decoded.requestedAttributes.photo) extras.age = decoded.requestedAttributes.photo;
+                        if (decoded.requestedAttributes.dateOfBirth) extras.dateOfBirth = decoded.requestedAttributes.dateOfBirth;
+                        if (decoded.requestedAttributes.emailAddress) extras.primaryEmail = decoded.requestedAttributes.emailAddress;
+                        if (decoded.requestedAttributes.allEmailAddresses) extras.emailAddresses = decoded.requestedAttributes.allEmailAddresses;
+                        if (decoded.requestedAttributes.allPhoneNumbers) extras.phoneNumbers = decoded.requestedAttributes.allPhoneNumbers;
                         if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
-                        if (decoded.requestedAttributes.customIdentifier) extras.custom_identifier = decoded.requestedAttributes.customIdentifier;
-                        if (decoded.requestedAttributes.registrationLevel) extras.registration_level = decoded.requestedAttributes.registrationLevel;                         
+                        if (decoded.requestedAttributes.customIdentifier) extras.customIdentifier = decoded.requestedAttributes.customIdentifier;
+                        if (decoded.requestedAttributes.registrationLevel) extras.registrationLevel = decoded.requestedAttributes.registrationLevel;                         
                         
                         if (decoded.requestedAttributes.ssn) {
-                            extras.ssn_number = decoded.requestedAttributes.ssn.ssn;
-                            extras.ssn_country = decoded.requestedAttributes.ssn.country;
+                            extras.ssnNumber = decoded.requestedAttributes.ssn.ssn;
+                            extras.ssnCountry = decoded.requestedAttributes.ssn.country;
                         }
+
+                        if (decoded.requestedAttributes.document) {
+                            extras.documentType = decoded.requestedAttributes.document.type;
+                            extras.documentCountry = decoded.requestedAttributes.document.country;
+                            extras.documentNumber = decoded.requestedAttributes.document.serialNumber;
+                            extras.documentExpiration = decoded.requestedAttributes.document.expirationDate;
+                        }                        
+
+                        if (decoded.requestedAttributes.covidCertificates) {
+                            if (decoded.requestedAttributes.covidCertificates.allowed == "true") {
+                                extras.covidVaccines = decoded.requestedAttributes.covidCertificates.vaccines.certificate;
+                                extras.covidTests = decoded.requestedAttributes.covidCertificates.tests.certificate;
+                                extras.covidRecovery = decoded.requestedAttributes.covidCertificates.recovery.certificate;
+                            }
+                        }                        
+
 
                         if (decoded.requestedAttributes.basicUserInfo) {
                             firstname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name : '',
