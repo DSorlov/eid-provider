@@ -17,7 +17,8 @@ module.exports = function(options) {
             minimumLevel: 'EXTENDED',
             default_country: 'SE',
             id_type: 'SSN',
-            attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES']
+            attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES'],
+            relyingPartyId: ''
         }, (options||options.set) ? options.set : {});
     }
 
@@ -34,7 +35,8 @@ module.exports = function(options) {
         password: 'test',
         default_country: 'SE',
         id_type: 'SSN',
-        attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES']    
+        attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES'],
+        relyingPartyId: ''    
     }, (options||options.set) ? options.set : {});            
 
 }

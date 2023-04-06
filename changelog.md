@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ## [Unreleased]
 
+## [1.0.2] (2023-04-05)
+
+### Added
+- Added support for integrator features for frejaeid
+- Changed keybag to AES-256-CBC for frejaeid test key
+
 ## [1.0.1] (2023-03-22)
 
 ### Added
