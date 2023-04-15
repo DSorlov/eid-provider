@@ -363,7 +363,7 @@ class FrejaEID extends BaseClient {
             var token = `${requstType}${result.json.authRef||result.json.signRef||result.json.orgIdRef}`;
             return this._createInitializationMessage(token, {
                 autostart_token: token,
-                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(result.json.signRef)
+                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(result.json.authRef||result.json.signRef||result.json.orgIdRef)
             });
 
         } else {
