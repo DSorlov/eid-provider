@@ -3,7 +3,11 @@
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
-## [Unreleased]
+## [1.0.3] (2023-05-26)
+
+### Added
+- Fixed error handling in baseclient.js
+
 
 ## [1.0.2] (2023-04-05)
 
