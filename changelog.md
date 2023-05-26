@@ -3,7 +3,17 @@
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
-## [Unreleased]
+## [1.0.3] (2023-05-26)
+
+### Added
+- Fixed error handling in baseclient.js
+
+
+## [1.0.2] (2023-04-05)
+
+### Added
+- Added support for integrator features for frejaeid
+- Changed keybag to AES-256-CBC for frejaeid test key
 
 ## [1.0.1] (2023-03-22)
 

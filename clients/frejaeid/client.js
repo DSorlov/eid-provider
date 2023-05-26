@@ -6,10 +6,16 @@ class FrejaEID extends BaseClient {
     constructor(settings) {
         super(settings);
         this.settings = settings || {};
+        this.relyingPartyId
+
+        this.relyingPartyId = ""
+        if (this.settings.relyingPartyId) 
+            if (this.settings.relyingPartyId!=='')
+                this.relyingPartyId = "&relyingPartyId="+encodeURIComponent(this.settings.relyingPartyId)
 
         this.clientInfo = {        
             name: "FrejaEID",
-            version: "20210408",
+            version: "20230415",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
@@ -18,7 +24,8 @@ class FrejaEID extends BaseClient {
         this._customAgent({
             pfx: this.settings.client_cert,
             passphrase: this.settings.password,
-            ca: this.settings.ca_cert
+            ca: this.settings.ca_cert,
+            ssl: { rejectUnauthorized: false },
         });
 
     };
@@ -72,7 +79,7 @@ class FrejaEID extends BaseClient {
             this._createErrorMessage('request_id_invalid');
         }    
 
-        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},requestData);
+        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},requestData+this.relyingPartyId);
 
         if (result.statusCode===599) {
             
@@ -245,7 +252,7 @@ class FrejaEID extends BaseClient {
     }
 
     async _simpleRequest(uri,data) {
-        var result = await this._httpRequest(`${this.settings.endpoint}/${uri}`,{},postData);
+        var result = await this._httpRequest(`${this.settings.endpoint}/${uri}`,{},postData+this.relyingPartyId);
 
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
@@ -257,7 +264,7 @@ class FrejaEID extends BaseClient {
     }  
     
     async getOrgIdList() {    
-        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{},'{}');
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{},this.relyingPartyId.slice(1));
 
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
@@ -272,7 +279,7 @@ class FrejaEID extends BaseClient {
         var postData = "deleteOrganisationIdRequest="+Buffer.from(JSON.stringify({
             identifier: id
           })).toString('base64');    
-        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/delete`,{},postData);
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/delete`,{},postData+this.relyingPartyId);
     
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
@@ -345,7 +352,7 @@ class FrejaEID extends BaseClient {
             requstType = "A"; 
         }
         
-        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},postData);
+        var result = await this._httpRequest(`${this.settings.endpoint}/${requestUri}`,{},postData+this.relyingPartyId);
 
         if (result.statusCode===599) {
             
@@ -356,7 +363,7 @@ class FrejaEID extends BaseClient {
             var token = `${requstType}${result.json.authRef||result.json.signRef||result.json.orgIdRef}`;
             return this._createInitializationMessage(token, {
                 autostart_token: token,
-                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(result.json.signRef)
+                autostart_url: "frejaeid://bindUserToTransaction?transactionReference="+encodeURIComponent(result.json.authRef||result.json.signRef||result.json.orgIdRef)
             });
 
         } else {

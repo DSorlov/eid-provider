@@ -201,7 +201,6 @@ class BaseClient {
                 resolve({
                     statusCode: 599,
                     statusMessage: err.message,
-                    headers: res.headers,
                     json: undefined,
                     data: undefined
                 });
