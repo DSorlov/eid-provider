@@ -10,7 +10,7 @@ class BankID extends BaseClient {
 
         this.clientInfo = {        
             name: "BankID",
-            version: "20210406",
+            version: "20240225",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
@@ -158,7 +158,7 @@ class BankID extends BaseClient {
                     qrStartSecret: result.json.qrStartSecret,
                     qrStartToken: result.json.qrStartToken,
                     qrAuthTime: Date(),
-                    qrCodeString: createQRCodeString
+                    qrCodeString: this.createQRCodeString(result.json)
                 });    
             } else {
                 return this._createInitializationMessage(result.json.orderRef, {
