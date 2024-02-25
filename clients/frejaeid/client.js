@@ -15,7 +15,7 @@ class FrejaEID extends BaseClient {
 
         this.clientInfo = {        
             name: "FrejaEID",
-            version: "20230415",
+            version: "20240225",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
@@ -149,15 +149,27 @@ class FrejaEID extends BaseClient {
                         };
 
                         if (decoded.requestedAttributes.age) extras.age = decoded.requestedAttributes.age;
-                        if (decoded.requestedAttributes.photo) extras.age = decoded.requestedAttributes.photo;
+                        if (decoded.requestedAttributes.photoFileInfo) extras.photo = decoded.requestedAttributes.photoFileInfo.fileHash;
                         if (decoded.requestedAttributes.dateOfBirth) extras.dateOfBirth = decoded.requestedAttributes.dateOfBirth;
                         if (decoded.requestedAttributes.emailAddress) extras.primaryEmail = decoded.requestedAttributes.emailAddress;
-                        if (decoded.requestedAttributes.allEmailAddresses) extras.emailAddresses = decoded.requestedAttributes.allEmailAddresses;
-                        if (decoded.requestedAttributes.allPhoneNumbers) extras.phoneNumbers = decoded.requestedAttributes.allPhoneNumbers;
                         if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
                         if (decoded.requestedAttributes.customIdentifier) extras.customIdentifier = decoded.requestedAttributes.customIdentifier;
+                        if (decoded.requestedAttributes.relyingPartyUserId) extras.relyingPartyUserId = decoded.requestedAttributes.relyingPartyUserId;
                         if (decoded.requestedAttributes.registrationLevel) extras.registrationLevel = decoded.requestedAttributes.registrationLevel;                         
-                        
+
+                        if (decoded.requestedAttributes.allEmailAddresses) {
+                            extras.emailAddresses = [];
+                            decoded.requestedAttributes.allEmailAddresses.forEach((emailObject)=>{
+                                extras.emailAddresses.push(emailObject.emailAddress);
+                            })
+                        }
+                        if (decoded.requestedAttributes.allPhoneNumbers) {
+                            extras.phoneNumbers = [];
+                            decoded.requestedAttributes.allPhoneNumbers.forEach((phoneObject)=>{
+                                extras.phoneNumbers.push(phoneObject.phoneNumber);
+                            })
+                        }                       
+
                         if (decoded.requestedAttributes.ssn) {
                             extras.ssnNumber = decoded.requestedAttributes.ssn.ssn;
                             extras.ssnCountry = decoded.requestedAttributes.ssn.country;
@@ -169,16 +181,7 @@ class FrejaEID extends BaseClient {
                             extras.documentNumber = decoded.requestedAttributes.document.serialNumber;
                             extras.documentExpiration = decoded.requestedAttributes.document.expirationDate;
                         }                        
-
-                        if (decoded.requestedAttributes.covidCertificates) {
-                            if (decoded.requestedAttributes.covidCertificates.allowed == "true") {
-                                extras.covidVaccines = decoded.requestedAttributes.covidCertificates.vaccines.certificate;
-                                extras.covidTests = decoded.requestedAttributes.covidCertificates.tests.certificate;
-                                extras.covidRecovery = decoded.requestedAttributes.covidCertificates.recovery.certificate;
-                            }
-                        }                        
-
-
+                     
                         if (decoded.requestedAttributes.basicUserInfo) {
                             firstname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name : '',
                             lastname =  decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.surname : '',

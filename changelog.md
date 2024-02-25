@@ -3,11 +3,24 @@
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
+## [1.1.0] (2024-02-25)
+
+### Removed
+- Removed old certificates from frejaeid
+- Fixed versioning missmatch
+
+### Fixed
+- Freja eID Photo seems broken but implemented the filehash
+- Freja eID Covid Certificates feature removed
+- Broken bankid qr-code generation have been fixed
+
+### Changes
+- In Freja eID both email and phone number object arrays have been flattened to string arrays
+
 ## [1.0.3] (2023-05-26)
 
 ### Added
 - Fixed error handling in baseclient.js
-
 
 ## [1.0.2] (2023-04-05)
 
