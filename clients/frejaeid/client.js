@@ -338,6 +338,7 @@ class FrejaEID extends BaseClient {
             postData = "initSignRequest="+Buffer.from(JSON.stringify({
                 attributesToReturn: this.settings.attribute_list,
                 minRegistrationLevel: this.settings.minimumLevel,
+                userConfirmationMethod: this.settings.userConfirmationMethod,
                 userInfoType: infoType.userInfoType,
                 userInfo: infoType.userInfo,
                 signatureType: 'SIMPLE',
@@ -350,6 +351,7 @@ class FrejaEID extends BaseClient {
             postData = "initAuthRequest="+Buffer.from(JSON.stringify({
                 attributesToReturn: this.settings.attribute_list,
                 minRegistrationLevel: this.settings.minimumLevel,
+                userConfirmationMethod: this.settings.userConfirmationMethod,
                 userInfoType: infoType.userInfoType,
                 userInfo: infoType.userInfo
             })).toString('base64');   
