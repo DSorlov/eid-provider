@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 ## [1.1.1] (2024-07-16)
 
+### Added
+- Freja eID Added userConfirmationMethod
+
 ### Fixed
 - Freja eID orgID getAll function API change implemented
 - Freja eID orgID getAll RP-id was broken
