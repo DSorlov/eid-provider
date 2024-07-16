@@ -3,6 +3,13 @@
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
+## [1.1.1] (2024-07-16)
+
+### Fixed
+- Freja eID orgID getAll function API change implemented
+- Freja eID orgID getAll RP-id was broken
+- Freja eID Fixed when no extra attributes are present in response
+
 ## [1.1.0] (2024-02-25)
 
 ### Removed
