@@ -268,7 +268,7 @@ class FrejaEID extends BaseClient {
     }  
     
     async getOrgIdList() {    
-        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{},this.relyingPartyId.slice(1));
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{method: 'POST'},this.relyingPartyId.slice(1));
 
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
