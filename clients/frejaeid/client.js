@@ -15,7 +15,7 @@ class FrejaEID extends BaseClient {
 
         this.clientInfo = {        
             name: "FrejaEID",
-            version: "20240716",
+            version: "20241023",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
@@ -148,9 +148,13 @@ class FrejaEID extends BaseClient {
                             jwtToken: result.json.details
                         };
 
+                        if (result.json.requestedAttributes.photo) {
+                            extras.photo = result.json.requestedAttributes.photo
+                        }
+
                         if (decoded.requestedAttributes) {
                             if (decoded.requestedAttributes.age) extras.age = decoded.requestedAttributes.age;
-                            if (decoded.requestedAttributes.photoFileInfo) extras.photo = decoded.requestedAttributes.photoFileInfo.fileHash;
+                            if (decoded.requestedAttributes.photoFileInfo) extras.photoHash = decoded.requestedAttributes.photoFileInfo.fileHash;
                             if (decoded.requestedAttributes.dateOfBirth) extras.dateOfBirth = decoded.requestedAttributes.dateOfBirth;
                             if (decoded.requestedAttributes.emailAddress) extras.primaryEmail = decoded.requestedAttributes.emailAddress;
                             if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
@@ -169,6 +173,9 @@ class FrejaEID extends BaseClient {
                                 decoded.requestedAttributes.allPhoneNumbers.forEach((phoneObject)=>{
                                     extras.phoneNumbers.push(phoneObject.phoneNumber);
                                 })
+                                if (extras.phoneNumbers.lenght>0) {
+                                    extras.phoneNumber = extras.phoneNumber[0]
+                                }
                             }                       
 
                             if (decoded.requestedAttributes.ssn) {
