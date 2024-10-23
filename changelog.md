@@ -3,6 +3,25 @@
 The format is based on [Keep a Changelog][keep-a-changelog]
 <!-- and this project adheres to [Semantic Versioning][semantic-versioning]. -->
 
+## [1.1.2] (2024-10-23)
+
+### Added
+- Added extras.phoneNumber to denote primary phone (Freja)
+- Added photoHash (Freja)
+
+### Fixed
+- Fixed broken photo attribute (Freja)
+
+## [1.1.1] (2024-07-16)
+
+### Added
+- Freja eID Added userConfirmationMethod
+
+### Fixed
+- Freja eID orgID getAll function API change implemented
+- Freja eID orgID getAll RP-id was broken
+- Freja eID Fixed when no extra attributes are present in response
+
 ## [1.1.0] (2024-02-25)
 
 ### Removed
@@ -151,7 +170,12 @@ The format is based on [Keep a Changelog][keep-a-changelog]
 
 [keep-a-changelog]: http://keepachangelog.com/en/1.0.0/
 [Unreleased]: https://github.com/DSorlov/eid-provider/compare/master...dev
-[1.0.1]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.0
+[1.1.2]: https://github.com/DSorlov/eid-provider/releases/tag/v1.1.2
+[1.1.1]: https://github.com/DSorlov/eid-provider/releases/tag/v1.1.1
+[1.1.0]: https://github.com/DSorlov/eid-provider/releases/tag/v1.1.0
+[1.0.3]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.3
+[1.0.2]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.2
+[1.0.1]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.1
 [1.0.0]: https://github.com/DSorlov/eid-provider/releases/tag/v1.0.0
 [0.2.1]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.1
 [0.2.0]: https://github.com/DSorlov/eid-provider/releases/tag/v0.2.0

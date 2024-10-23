@@ -14,6 +14,7 @@ module.exports = function(options) {
                 'wSYLdhe93ToPR2X1UrNXxOg1juI': fs.readFileSync(path.join(__dirname,'/cert','prod_wSYLdhe93ToPR2X1UrNXxOg1juI.jwt'))
             },
             minimumLevel: 'EXTENDED',
+            userConfirmationMethod: 'DEFAULT',
             default_country: 'SE',
             id_type: 'SSN',
             attribute_list: ['EMAIL_ADDRESS','RELYING_PARTY_USER_ID','BASIC_USER_INFO','SSN','ADDRESSES','DATE_OF_BIRTH','ALL_EMAIL_ADDRESSES'],
@@ -30,6 +31,7 @@ module.exports = function(options) {
             'DiZbzBfysUm6-IwI-GtienEsbjc': fs.readFileSync(path.join(__dirname,'/cert','test_DiZbzBfysUm6-IwI-GtienEsbjc.jwt'))
         },
         minimumLevel: 'EXTENDED',
+        userConfirmationMethod: 'DEFAULT',
         password: 'test',
         default_country: 'SE',
         id_type: 'SSN',

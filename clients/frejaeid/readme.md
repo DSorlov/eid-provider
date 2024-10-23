@@ -53,6 +53,8 @@ var config = {
     },
     // The minimum level to accept
     minimumLevel: 'EXTENDED',
+    // Level to confirm user identity, DEFAULT or DEFAULT_AND_FACE
+    userConfirmationMethod: 'DEFAULT',
     // Default country when calling identification with just an SSN
     default_country: 'SE',
     // The UserInfo field

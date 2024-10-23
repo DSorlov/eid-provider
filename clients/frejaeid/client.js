@@ -15,7 +15,7 @@ class FrejaEID extends BaseClient {
 
         this.clientInfo = {        
             name: "FrejaEID",
-            version: "20240225",
+            version: "20241023",
             author: "Daniel Sörlöv <daniel@sorlov.com>",
             url: "https://github.com/DSorlov/eid-provider",
             methods: ['auth','sign']
@@ -148,46 +148,54 @@ class FrejaEID extends BaseClient {
                             jwtToken: result.json.details
                         };
 
-                        if (decoded.requestedAttributes.age) extras.age = decoded.requestedAttributes.age;
-                        if (decoded.requestedAttributes.photoFileInfo) extras.photo = decoded.requestedAttributes.photoFileInfo.fileHash;
-                        if (decoded.requestedAttributes.dateOfBirth) extras.dateOfBirth = decoded.requestedAttributes.dateOfBirth;
-                        if (decoded.requestedAttributes.emailAddress) extras.primaryEmail = decoded.requestedAttributes.emailAddress;
-                        if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
-                        if (decoded.requestedAttributes.customIdentifier) extras.customIdentifier = decoded.requestedAttributes.customIdentifier;
-                        if (decoded.requestedAttributes.relyingPartyUserId) extras.relyingPartyUserId = decoded.requestedAttributes.relyingPartyUserId;
-                        if (decoded.requestedAttributes.registrationLevel) extras.registrationLevel = decoded.requestedAttributes.registrationLevel;                         
-
-                        if (decoded.requestedAttributes.allEmailAddresses) {
-                            extras.emailAddresses = [];
-                            decoded.requestedAttributes.allEmailAddresses.forEach((emailObject)=>{
-                                extras.emailAddresses.push(emailObject.emailAddress);
-                            })
-                        }
-                        if (decoded.requestedAttributes.allPhoneNumbers) {
-                            extras.phoneNumbers = [];
-                            decoded.requestedAttributes.allPhoneNumbers.forEach((phoneObject)=>{
-                                extras.phoneNumbers.push(phoneObject.phoneNumber);
-                            })
-                        }                       
-
-                        if (decoded.requestedAttributes.ssn) {
-                            extras.ssnNumber = decoded.requestedAttributes.ssn.ssn;
-                            extras.ssnCountry = decoded.requestedAttributes.ssn.country;
+                        if (result.json.requestedAttributes.photo) {
+                            extras.photo = result.json.requestedAttributes.photo
                         }
 
-                        if (decoded.requestedAttributes.document) {
-                            extras.documentType = decoded.requestedAttributes.document.type;
-                            extras.documentCountry = decoded.requestedAttributes.document.country;
-                            extras.documentNumber = decoded.requestedAttributes.document.serialNumber;
-                            extras.documentExpiration = decoded.requestedAttributes.document.expirationDate;
-                        }                        
-                     
-                        if (decoded.requestedAttributes.basicUserInfo) {
-                            firstname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name : '',
-                            lastname =  decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.surname : '',
-                            fullname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name+' '+decoded.requestedAttributes.basicUserInfo.surname : ''
-                        }
+                        if (decoded.requestedAttributes) {
+                            if (decoded.requestedAttributes.age) extras.age = decoded.requestedAttributes.age;
+                            if (decoded.requestedAttributes.photoFileInfo) extras.photoHash = decoded.requestedAttributes.photoFileInfo.fileHash;
+                            if (decoded.requestedAttributes.dateOfBirth) extras.dateOfBirth = decoded.requestedAttributes.dateOfBirth;
+                            if (decoded.requestedAttributes.emailAddress) extras.primaryEmail = decoded.requestedAttributes.emailAddress;
+                            if (decoded.requestedAttributes.addresses) extras.addresses = decoded.requestedAttributes.addresses;
+                            if (decoded.requestedAttributes.customIdentifier) extras.customIdentifier = decoded.requestedAttributes.customIdentifier;
+                            if (decoded.requestedAttributes.relyingPartyUserId) extras.relyingPartyUserId = decoded.requestedAttributes.relyingPartyUserId;
+                            if (decoded.requestedAttributes.registrationLevel) extras.registrationLevel = decoded.requestedAttributes.registrationLevel;                         
 
+                            if (decoded.requestedAttributes.allEmailAddresses) {
+                                extras.emailAddresses = [];
+                                decoded.requestedAttributes.allEmailAddresses.forEach((emailObject)=>{
+                                    extras.emailAddresses.push(emailObject.emailAddress);
+                                })
+                            }
+                            if (decoded.requestedAttributes.allPhoneNumbers) {
+                                extras.phoneNumbers = [];
+                                decoded.requestedAttributes.allPhoneNumbers.forEach((phoneObject)=>{
+                                    extras.phoneNumbers.push(phoneObject.phoneNumber);
+                                })
+                                if (extras.phoneNumbers.lenght>0) {
+                                    extras.phoneNumber = extras.phoneNumber[0]
+                                }
+                            }                       
+
+                            if (decoded.requestedAttributes.ssn) {
+                                extras.ssnNumber = decoded.requestedAttributes.ssn.ssn;
+                                extras.ssnCountry = decoded.requestedAttributes.ssn.country;
+                            }
+
+                            if (decoded.requestedAttributes.document) {
+                                extras.documentType = decoded.requestedAttributes.document.type;
+                                extras.documentCountry = decoded.requestedAttributes.document.country;
+                                extras.documentNumber = decoded.requestedAttributes.document.serialNumber;
+                                extras.documentExpiration = decoded.requestedAttributes.document.expirationDate;
+                            }                        
+                        
+                            if (decoded.requestedAttributes.basicUserInfo) {
+                                firstname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name : '',
+                                lastname =  decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.surname : '',
+                                fullname = decoded.requestedAttributes.basicUserInfo ? decoded.requestedAttributes.basicUserInfo.name+' '+decoded.requestedAttributes.basicUserInfo.surname : ''
+                            }
+                        }
 
                         return this._createCompletionMessage(id,firstname,lastname,fullname,extras);       
 
@@ -267,7 +275,7 @@ class FrejaEID extends BaseClient {
     }  
     
     async getOrgIdList() {    
-        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{},this.relyingPartyId.slice(1));
+        var result = await this._httpRequest(`${this.settings.endpoint}/organisation/management/orgId/1.0/users/getAll`,{method: 'POST'},this.relyingPartyId);
 
         if (result.statusCode===599) {
             return this._createErrorMessage('internal_error',result.statusMessage);
@@ -337,6 +345,7 @@ class FrejaEID extends BaseClient {
             postData = "initSignRequest="+Buffer.from(JSON.stringify({
                 attributesToReturn: this.settings.attribute_list,
                 minRegistrationLevel: this.settings.minimumLevel,
+                userConfirmationMethod: this.settings.userConfirmationMethod,
                 userInfoType: infoType.userInfoType,
                 userInfo: infoType.userInfo,
                 signatureType: 'SIMPLE',
@@ -349,6 +358,7 @@ class FrejaEID extends BaseClient {
             postData = "initAuthRequest="+Buffer.from(JSON.stringify({
                 attributesToReturn: this.settings.attribute_list,
                 minRegistrationLevel: this.settings.minimumLevel,
+                userConfirmationMethod: this.settings.userConfirmationMethod,
                 userInfoType: infoType.userInfoType,
                 userInfo: infoType.userInfo
             })).toString('base64');   
